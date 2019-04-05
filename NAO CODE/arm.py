@@ -12,13 +12,13 @@ postureProxy.goToPosture("Crouch",1.0)
 
 motionProxy.wakeUp()
 
-motionProxy.openHand('LHand')
-motionProxy.closeHand('LHand')
+
+
 
 
 memory = ALProxy("ALMemory","172.20.10.14",9559)
 memory.subscribeToEvent("TouchChanged", "ReactToTouch", "172.20.10.14")
-#time.sleep(3.0)
+
 touchOrNot = memory.getData("TouchChanged")
 
 
@@ -33,66 +33,66 @@ motionProxy.setStiffnesses("LElbowYaw", 1.0)
 motionProxy.setStiffnesses("LElbowRoll", 1.0)
 
 
+#hold pen
+names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
+angleLists = [-60.0*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 5.0*almath.TO_RAD,100.0*almath.TO_RAD,
+              30.0*almath.TO_RAD, -10.0*almath.TO_RAD]
+times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
+isAbsolute = True
+motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
+motionProxy.openHand('LHand')
+#say "put a pen in my hand"
+time.sleep(2.0)
+motionProxy.closeHand('LHand')
+
+postureProxy.goToPosture("Crouch",1.0)
 
 
-
-#Middle
-names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch"]
-angleLists = [-10.5*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 5.0*almath.TO_RAD,80.0*almath.TO_RAD]
-times      = [1.0, 1.0,1.0,1.0,1.0]
+#Middle-calibration
+names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
+angleLists = [-10.5*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 5.0*almath.TO_RAD,80.0*almath.TO_RAD,
+              60*almath.TO_RAD, 20*almath.TO_RAD]
+times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
 isAbsolute = True
 motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
 
+#tell the teacher to keep adjusting the tablet until the pen points to the middle of the screen, then press the head buttom
+print touchOrNot
+if (['Head/Touch/Middle', False] or ['Head/Touch/Middle', True]) in touchOrNot:
+    #colibration completed
+    postureProxy.goToPosture("Crouch",1.0)
 
 #Right top
-names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch"]
-angleLists = [-1.0*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 25.0*almath.TO_RAD,65.0*almath.TO_RAD]
-times      = [1.0, 1.0,1.0,1.0,1.0]
+names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
+angleLists = [-1.0*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 25.0*almath.TO_RAD,65.0*almath.TO_RAD,
+              60*almath.TO_RAD, 15*almath.TO_RAD]
+times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
 isAbsolute = True
 motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
 
+postureProxy.goToPosture("Crouch",1.0)
 
 #Left bottom
-names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch"]
-angleLists = [-30*almath.TO_RAD,-70.5*almath.TO_RAD, 104.5*almath.TO_RAD, 35.0*almath.TO_RAD,90.0*almath.TO_RAD]
-times      = [1.0, 1.0,1.0,1.0,1.0]
+names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
+angleLists = [-30*almath.TO_RAD,-70.5*almath.TO_RAD, 104.5*almath.TO_RAD, 35.0*almath.TO_RAD,90.0*almath.TO_RAD,
+              40*almath.TO_RAD, 29*almath.TO_RAD]
+times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
 isAbsolute = True
 motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
+
+postureProxy.goToPosture("Crouch",1.0)
 
 #Left top
-names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch"]
-angleLists = [-88.5*almath.TO_RAD,-15*almath.TO_RAD, 90*almath.TO_RAD, 76.0*almath.TO_RAD,80*almath.TO_RAD]
-times      = [1.0, 1.0,1.0,1.0,1.0]
+names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
+angleLists = [-88.5*almath.TO_RAD,-15*almath.TO_RAD, 90*almath.TO_RAD, 76.0*almath.TO_RAD,80*almath.TO_RAD,
+              40*almath.TO_RAD, 15*almath.TO_RAD]
+times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
 isAbsolute = True
 motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
 
+postureProxy.goToPosture("Crouch",1.0)
 #Right bottom
 
 
-
-
-print touchOrNot
-#if (['Head/Touch/Middle', False] or ['Head/Touch/Middle', True]) in touchOrNot:
-
-motionProxy.closeHand('LHand')
-
-
-
-
-
-#RHand calibration
-#motionProxy.setStiffnesses("RWristYaw", 1.0)
-#motionProxy.setStiffnesses("RShoulderRoll", 1.0)
-#motionProxy.setStiffnesses("RElbowYaw", 1.0)
-#motionProxy.setStiffnesses("RElbowRoll", 1.0)
-
-
-#names      = ["RElbowRoll","RElbowYaw","RWristYaw", "RShoulderRoll","RShoulderPitch"]
-#angleLists = [10.0*almath.TO_RAD,-50.0*almath.TO_RAD,15.0*almath.TO_RAD, 18.0*almath.TO_RAD,30.0*almath.TO_RAD]
-#times      = [1.0, 1.0,1.0, 1.0,1.0]
-#isAbsolute = True
-#motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
-
-#time.sleep(5.0)
-#motionProxy.rest()
+motionProxy.rest()
 
