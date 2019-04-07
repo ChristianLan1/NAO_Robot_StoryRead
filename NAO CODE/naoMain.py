@@ -1,5 +1,6 @@
 from naoqi import ALProxy
-from pdfReader import convert
+from pdfReader import convert, layout
+from arm import point
 import re
 import time
 # -*- coding: utf-8 -*-
@@ -10,13 +11,16 @@ Port = 9559
 
 
 
+
 class Reader:
     def __init__(self, filename, tts):
         self.filename = filename
         self.tts = tts
-
+        self.pages = [1,2,3,4,5,6,7,8,9,10,11]
+        self.countPage = 0
+        self.turnPage = 0
     def readAuthor(self):
-        convert("60744-whoop-goes-the-pufferfish.pdf",pages = [0])#getting author info
+        convert("60744-whoop-goes-the-pufferfish.pdf",[0])#getting author info
         with open(self.filename) as f:
             lines = f.readlines()
             print lines
@@ -31,8 +35,8 @@ class Reader:
         globalSentence = """"""
         count = 0
         globalFace = 9999
-        convert("60744-whoop-goes-the-pufferfish.pdf",pages=[1,2,3,4,5,6,7,8,9,10,11])
-        with open('C:/Users/xinjie/OneDrive/NAO CODE/output.txt') as f:
+        convert("60744-whoop-goes-the-pufferfish.pdf",self.pages)
+        with open('c:/Users/Zoe Chai/Desktop/output.txt') as f:
             lines = f.readlines()
             for line in lines:
                 #re.sub("^ [0-9]\/[0-9][0-9]"," ",line)
@@ -77,13 +81,39 @@ class Reader:
                     except RuntimeError:
                         print"skip the error"
                         pass
+                page = re.search("([0-9]+)\/[0-9]+",sytax)
                 
+                #count the pagenum and call the def locationToPoint to return a location
+                
+                if self.countPage == 0 and self.turnPage == 0:
+                    pagenum = self.pages[0]
+                    location = self.locationToPoint(pagenum)
+                    self.turnPage = 1
+                    point(location)
+                
+                if page:
+                    self.countPage = self.countPage + 1
+                    pagenum = self.pages[self.countPage]
+                    location = self.locationToPoint(pagenum)
+                    point(location)
+                
+                
+
                 output = re.sub("([0-9]+)\/[0-9]+","",sytax)
                 count += 1
                 #if count 
                 #print "sytax", output
                 #tts.setParameter("speed", 50)
                 atts.say(output,{"bodyLanguageMode":"random"})
+    
+    def locationToPoint(self, pagenum):
+        dictTxt = layout(True, "60744-whoop-goes-the-pufferfish.pdf",self.pages)
+        dictImg = layout(False, "60744-whoop-goes-the-pufferfish.pdf",self.pages)
+        #if the text is at rightbottom, point to the image
+        if dictTxt[pagenum] == "rightbottom":
+            return dictImg[pagenum]
+        else:
+            return dictTxt[pagenum]
 
 
 class SoundFeedback:
@@ -125,6 +155,11 @@ if __name__ == "__main__":
     asr = ALProxy("ALSpeechRecognition", "172.20.10.14", 9559)
     memoryProxy = ALProxy("ALMemory", "172.20.10.14", 9559)
     motion = ALProxy("ALMotion", IP ,Port)
+    postureProxy = ALProxy("ALRobotPosture", "172.20.10.14", 9559)
+    
+    #initializePosture
+    motion.rest
+    postureProxy.goToPosture("Crouch",1.0)
 
     #InitializeMotion
     motion.wakeUp()
@@ -151,7 +186,7 @@ if __name__ == "__main__":
 
 
 
-    r = Reader('C:/Users/xinjie/OneDrive/NAO CODE/output.txt',tts)
+    r = Reader('c:/Users/Zoe Chai/Desktop/output.txt',tts)
     r.readAuthor()
 
     voice = SoundFeedback(asr,memoryProxy)
@@ -169,4 +204,3 @@ if __name__ == "__main__":
     tracker.stopTracker()
     tracker.unregisterAllTargets()
     motion.rest()
-
