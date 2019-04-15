@@ -1,14 +1,15 @@
 from naoqi import ALProxy
 from pdfReader import convert, layout
-from arm import point
+import arm
 import re
 import time
+import io
 # -*- coding: utf-8 -*-
 import sys, os
 
 IP = "172.20.10.14"
 Port = 9559
-
+convertedFile = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
 
 
 
@@ -31,12 +32,14 @@ class Reader:
         self.tts.say("The author is: "+line[1])
         self.tts.say(" Remember if we read from this author before? ")
     
-    def readContent(self,gaze,memoryProxy,atts):
+    def readContent(self,gaze,memoryProxy,atts,asr,armMotion):
         globalSentence = """"""
         count = 0
         globalFace = 9999
         convert("60744-whoop-goes-the-pufferfish.pdf",self.pages)
-        with open('c:/Users/Zoe Chai/Desktop/output.txt') as f:
+        fileName = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
+        #fileName = 'c:/Users/Zoe Chai/Desktop/output.txt'
+        with open(fileName ) as f:
             lines = f.readlines()
             for line in lines:
                 #re.sub("^ [0-9]\/[0-9][0-9]"," ",line)
@@ -54,9 +57,9 @@ class Reader:
                 
                 toleranceRange = gaze.getTolerance()
                 print"range",toleranceRange
-                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis","172.20.10.14")
+                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",IP)
                 #print"look back"
-                memoryProxy.subscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis","172.20.10.14")
+                memoryProxy.subscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis",IP)
             
                 time.sleep(2)
                 
@@ -72,12 +75,27 @@ class Reader:
                 #print( "visualData: %s" % visualData )
                 #time.sleep(2)
                 #memoryProxy.unsubscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis")
-                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis","172.20.10.14")
+                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",IP)
                 time.sleep(2)
                 if len(PeopleId) != 0 and not jump:
                     try:
                         visualData = memoryProxy.getData("PeoplePerception/Person/"+str(PeopleId[0])+"/IsLookingAtRobot")
                         print( "visualData: %s" % visualData )
+                        LedProxy = ALProxy("ALLeds", IP, 9559)
+                        LedProxy.randomEyes(2)
+                        if visualData != 1:
+                            tts.say("Hey my little friend!")
+                            tts.say("Can you tell me what just happened in the story?")
+                            listen = SoundFeedback(asr,memoryProxy)
+                            sound = listen.getVoiceRec()
+                            if sound == "No":
+                                tts.say("Aw")
+                                tts.say("I would feel sad if you are not reading it with me")
+                                tts.say("Please come back")
+                            else:
+                                tts.say("That's right!")
+                                tts.say("Let's continue!")
+
                     except RuntimeError:
                         print"skip the error"
                         pass
@@ -89,20 +107,23 @@ class Reader:
                     pagenum = self.pages[0]
                     location = self.locationToPoint(pagenum)
                     self.turnPage = 1
-                    point(location)
+                    armMotion.point(location)
+                    tts.say("Let's look at this picture")
+                    
                 
                 if page:
                     self.countPage = self.countPage + 1
                     pagenum = self.pages[self.countPage]
                     location = self.locationToPoint(pagenum)
-                    point(location)
+                    armMotion.point(location)
+                    tts.say("Let's look ar this sentence")
                 
-                
+                time.sleep(1)
 
                 output = re.sub("([0-9]+)\/[0-9]+","",sytax)
                 count += 1
                 #if count 
-                #print "sytax", output
+                print "sytax", output
                 #tts.setParameter("speed", 50)
                 atts.say(output,{"bodyLanguageMode":"random"})
     
@@ -142,7 +163,7 @@ class SoundFeedback:
         data=memoryProxy.getData("WordRecognized")
         print( "data: %s" % data )
         
-        memoryProxy.unsubscribeToEvent('WordRecognized',"172.20.10.14")
+        memoryProxy.unsubscribeToEvent('WordRecognized',IP)
         return data
 
    
@@ -152,10 +173,10 @@ if __name__ == "__main__":
     gaze = ALProxy("ALGazeAnalysis",IP,Port)
     tts = ALProxy("ALTextToSpeech", IP,Port)
     atts = ALProxy("ALAnimatedSpeech",IP,Port)
-    asr = ALProxy("ALSpeechRecognition", "172.20.10.14", 9559)
-    memoryProxy = ALProxy("ALMemory", "172.20.10.14", 9559)
+    asr = ALProxy("ALSpeechRecognition", IP, 9559)
+    memoryProxy = ALProxy("ALMemory", IP, 9559)
     motion = ALProxy("ALMotion", IP ,Port)
-    postureProxy = ALProxy("ALRobotPosture", "172.20.10.14", 9559)
+    postureProxy = ALProxy("ALRobotPosture", IP, 9559)
     
     #initializePosture
     motion.rest
@@ -164,7 +185,17 @@ if __name__ == "__main__":
     #InitializeMotion
     motion.wakeUp()
     motion.stiffnessInterpolation("Head", 1.0, 1.0)
+
+    tts.say("please put a pen for me")
+    #Initialize armMotion instance
+    armMotion = arm.ArmMotion(motion,memoryProxy,postureProxy)
+    #Calibrate the hand
+    tts.say("Calibration")
+    tts.say("Please place the center of the tablet to where I'm pointing at")
+    tts.say("Please touch my head when calibration finished")
+    armMotion.point("middle")
     
+    #tts.say("Calibration finished.")
     #Initializing Tracker
     tracker = ALProxy("ALTracker", IP, Port)
     targetName = "Face"
@@ -176,7 +207,8 @@ if __name__ == "__main__":
 
     try:
         while(tracker.isTargetLost()):
-            time.sleep(1)
+            time.sleep(5)
+            tts.say("If you are ready to read with me, please look at me")
             print"looking for target"
     except KeyboardInterrupt:
         print
@@ -186,7 +218,7 @@ if __name__ == "__main__":
 
 
 
-    r = Reader('c:/Users/Zoe Chai/Desktop/output.txt',tts)
+    r = Reader(convertedFile,tts)
     r.readAuthor()
 
     voice = SoundFeedback(asr,memoryProxy)
@@ -197,7 +229,7 @@ if __name__ == "__main__":
     else:
         tts.say("OK! Let's read it")
 
-    r.readContent(gaze,memoryProxy,atts)
+    r.readContent(gaze,memoryProxy,atts,asr,armMotion)
 
 
     gaze.unsubscribe("ALGazeAnalysis")
