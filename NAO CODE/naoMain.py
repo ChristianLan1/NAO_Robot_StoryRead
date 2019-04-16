@@ -14,9 +14,10 @@ convertedFile = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
 
 
 class Reader:
-    def __init__(self, filename, tts):
+    def __init__(self, filename, tts, tracker):
         self.filename = filename
         self.tts = tts
+        self.tracker = tracker
         self.pages = [1,2,3,4,5,6,7,8,9,10,11]
         self.countPage = 0
         self.turnPage = 0
@@ -32,13 +33,17 @@ class Reader:
         self.tts.say("The author is: "+line[1])
         self.tts.say(" Remember if we read from this author before? ")
     
-    def readContent(self,gaze,memoryProxy,atts,asr,armMotion):
+    def readContent(self,gaze,memoryProxy,atts,asr,armMotion,faceProxy):
         globalSentence = """"""
         count = 0
         globalFace = 9999
+        
         convert("60744-whoop-goes-the-pufferfish.pdf",self.pages)
         fileName = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
         #fileName = 'c:/Users/Zoe Chai/Desktop/output.txt'
+        dictTxt = layout(True, "60744-whoop-goes-the-pufferfish.pdf",self.pages)
+        dictImg = layout(False, "60744-whoop-goes-the-pufferfish.pdf",self.pages)
+
         with open(fileName ) as f:
             lines = f.readlines()
             for line in lines:
@@ -66,6 +71,7 @@ class Reader:
                 PeopleId = memoryProxy.getData("PeoplePerception/PeopleList")
                 print"FaceGlobalId", globalFace
                 print"FaceId", PeopleId
+                faceData = faceProxy.getLearnedFacesList()
                 if globalFace != PeopleId:
                     globalFace = PeopleId
                     
@@ -77,7 +83,7 @@ class Reader:
                 #memoryProxy.unsubscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis")
                 #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",IP)
                 time.sleep(2)
-                if len(PeopleId) != 0 and not jump:
+                if len(PeopleId) != 0 and not jump or faceData == "Child":
                     try:
                         visualData = memoryProxy.getData("PeoplePerception/Person/"+str(PeopleId[0])+"/IsLookingAtRobot")
                         print( "visualData: %s" % visualData )
@@ -105,8 +111,12 @@ class Reader:
                 
                 if self.countPage == 0 and self.turnPage == 0:
                     pagenum = self.pages[0]
-                    location = self.locationToPoint(pagenum)
+                    if dictTxt[pagenum] == "rightbottom":
+                        location = dictImg[pagenum]
+                    else:
+                        location = dictTxt[pagenum]
                     self.turnPage = 1
+                    self.tracker.setTimeOut(2000)
                     armMotion.point(location)
                     tts.say("Let's look at this picture")
                     
@@ -114,7 +124,11 @@ class Reader:
                 if page:
                     self.countPage = self.countPage + 1
                     pagenum = self.pages[self.countPage]
-                    location = self.locationToPoint(pagenum)
+                    if dictTxt[pagenum] == "rightbottom":
+                        location = dictImg[pagenum]
+                    else:
+                        location = dictTxt[pagenum]
+                    #location = self.locationToPoint(pagenum)
                     armMotion.point(location)
                     tts.say("Let's look ar this sentence")
                 
@@ -127,15 +141,7 @@ class Reader:
                 #tts.setParameter("speed", 50)
                 atts.say(output,{"bodyLanguageMode":"random"})
     
-    def locationToPoint(self, pagenum):
-        dictTxt = layout(True, "60744-whoop-goes-the-pufferfish.pdf",self.pages)
-        dictImg = layout(False, "60744-whoop-goes-the-pufferfish.pdf",self.pages)
-        #if the text is at rightbottom, point to the image
-        if dictTxt[pagenum] == "rightbottom":
-            return dictImg[pagenum]
-        else:
-            return dictTxt[pagenum]
-
+    
 
 class SoundFeedback:
     def __init__(self,asr,memoryProxy):
@@ -193,7 +199,7 @@ if __name__ == "__main__":
     tts.say("Calibration")
     tts.say("Please place the center of the tablet to where I'm pointing at")
     tts.say("Please touch my head when calibration finished")
-    armMotion.point("middle")
+    #armMotion.point("calibration")
     
     #tts.say("Calibration finished.")
     #Initializing Tracker
@@ -204,21 +210,35 @@ if __name__ == "__main__":
     # Then, start tracker.
     tracker.track(targetName)
     print "ALTracker successfully started, now show your face to robot!"
-
+    faceProxy = ALProxy("ALFaceDetection", IP, Port)
+    faceProxy.clearDatabase()
+    faceProxy.setTrackingEnabled(True)
+    faceProxy.subscribe("Child", 600, 0.0 )
+    #tracker.toggleSearch(True)
+    
     try:
         while(tracker.isTargetLost()):
-            time.sleep(5)
-            tts.say("If you are ready to read with me, please look at me")
+            
+            
+           
+            
+            tts.say("If you are ready to read with me, please look at me for 10 seconds")
+            faceProxy.learnFace("Child")
+            time.sleep(8)
             print"looking for target"
     except KeyboardInterrupt:
-        print
+        printc
         print"Interrupted by user"
+    #faceData = memoryProxy.getData("FaceDetected")
+    #tracker.toggleSearch(False)
+    faceData = faceProxy.getLearnedFacesList()
+    print faceData
 
+
+    tts.say("Alright, we are ready to go!")
+    time.sleep(1)
     
-
-
-
-    r = Reader(convertedFile,tts)
+    r = Reader(convertedFile,tts,tracker)
     r.readAuthor()
 
     voice = SoundFeedback(asr,memoryProxy)
@@ -229,7 +249,7 @@ if __name__ == "__main__":
     else:
         tts.say("OK! Let's read it")
 
-    r.readContent(gaze,memoryProxy,atts,asr,armMotion)
+    r.readContent(gaze,memoryProxy,atts,asr,armMotion,faceProxy)
 
 
     gaze.unsubscribe("ALGazeAnalysis")
