@@ -58,13 +58,14 @@ class Reader:
             sentence = re.split("\.",globalSentence)
             #print "sentence", sentence
             gaze.subscribe("ALGazeAnalysis")
+            memoryProxy.subscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis",IP)
             for sytax in sentence:
                 
                 toleranceRange = gaze.getTolerance()
                 print"range",toleranceRange
                 #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",IP)
                 #print"look back"
-                memoryProxy.subscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis",IP)
+                
             
                 time.sleep(2)
                 
@@ -72,17 +73,22 @@ class Reader:
                 print"FaceGlobalId", globalFace
                 print"FaceId", PeopleId
                 faceData = faceProxy.getLearnedFacesList()
+                targetPosition = self.tracker.getTargetPosition(0)
+                print targetPosition
                 if globalFace != PeopleId:
                     globalFace = PeopleId
                     
                     jump = True
                 else:
                     jump = False
+                #if self.tracker.isNewTargetDetected():
+
                 #print( "visualData: %s" % visualData )
                 #time.sleep(2)
                 #memoryProxy.unsubscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis")
                 #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",IP)
                 time.sleep(2)
+                print faceData
                 if len(PeopleId) != 0 and not jump or faceData == "Child":
                     try:
                         visualData = memoryProxy.getData("PeoplePerception/Person/"+str(PeopleId[0])+"/IsLookingAtRobot")
@@ -116,9 +122,11 @@ class Reader:
                     else:
                         location = dictTxt[pagenum]
                     self.turnPage = 1
-                    self.tracker.setTimeOut(2000)
-                    armMotion.point(location)
+                    #self.tracker.setTimeOut(2000)
                     tts.say("Let's look at this picture")
+                    armMotion.point(location)
+                    #self.tracker.lookAt(targetPosition,0,0.5,False)
+                    
                     
                 
                 if page:
@@ -129,8 +137,10 @@ class Reader:
                     else:
                         location = dictTxt[pagenum]
                     #location = self.locationToPoint(pagenum)
+                    #self.tracker.setTimeOut(2000)
                     armMotion.point(location)
                     tts.say("Let's look ar this sentence")
+                self.tracker.lookAt(targetPosition,0,0.5,False)
                 
                 time.sleep(1)
 
@@ -148,23 +158,23 @@ class SoundFeedback:
         self.asr = asr
         self.memoryProxy = memoryProxy
     def getVoiceRec(self):
-        asr.setVisualExpression(True)
-        asr.pause(True)
-        asr.setLanguage("English")
+        self.asr.setVisualExpression(True)
+        self.asr.pause(True)
+        self.asr.setLanguage("English")
 
         vocabulary = ["yes", "no"]
 
-        asr.setVocabulary(vocabulary, False)
-        asr.subscribe(IP)
+        self.asr.setVocabulary(vocabulary, False)
+        self.asr.subscribe(IP)
         print "speech recognition engine started"
 
-        memoryProxy = ALProxy("ALMemory", IP, 9559)
-        memoryProxy.subscribeToEvent('WordRecognized',IP,IP)
+        #memoryProxy = ALProxy("ALMemory", IP, 9559)
+        self.memoryProxy.subscribeToEvent('WordRecognized',IP,IP)
         #asr.removeAllContext()
-        asr.pause(False)
+        self.asr.pause(False)
         time.sleep(5)
 
-        asr.unsubscribe(IP)
+        self.asr.unsubscribe(IP)
 
         data=memoryProxy.getData("WordRecognized")
         print( "data: %s" % data )
@@ -199,9 +209,9 @@ if __name__ == "__main__":
     tts.say("Calibration")
     tts.say("Please place the center of the tablet to where I'm pointing at")
     tts.say("Please touch my head when calibration finished")
-    #armMotion.point("calibration")
+    armMotion.point("calibration")
     
-    #tts.say("Calibration finished.")
+    tts.say("Calibration finished.")
     #Initializing Tracker
     tracker = ALProxy("ALTracker", IP, Port)
     targetName = "Face"
@@ -232,6 +242,9 @@ if __name__ == "__main__":
     #faceData = memoryProxy.getData("FaceDetected")
     #tracker.toggleSearch(False)
     faceData = faceProxy.getLearnedFacesList()
+    if len(faceData) == 0:
+        faceProxy.learnFace("Child")
+        time.sleep(8)
     print faceData
 
 
@@ -242,6 +255,7 @@ if __name__ == "__main__":
     r.readAuthor()
 
     voice = SoundFeedback(asr,memoryProxy)
+    #The robot will stand up at this sytax. No idea why
     data = voice.getVoiceRec()
     if data[0] == "yes":
         tts.say("Do you remember what we liked about that story? Here's another book by this author.")
