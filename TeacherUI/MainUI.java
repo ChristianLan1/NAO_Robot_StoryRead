@@ -1,8 +1,7 @@
 /**
  * Author:LIUYI CHAI
- * Team:Microsoft Fans
- * Date:12/10/2018
- * Purpose:This class is a UI for users to login
+
+ * Purpose:This class is a UI for users to choose books
  */
 
 import java.awt.EventQueue;
