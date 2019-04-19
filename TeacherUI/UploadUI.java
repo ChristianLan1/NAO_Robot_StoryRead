@@ -1,8 +1,7 @@
 /**
  * Author:LIUYI CHAI
- * Team:Microsoft Fans
- * Date:12/10/2018
- * Purpose:This class is a UI for users to invite other players before the game starts
+
+ * Purpose:This class is a UI for users to upload their books
  */
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
