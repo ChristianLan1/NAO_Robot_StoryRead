@@ -10,7 +10,7 @@ import sys, os
 IP = "172.20.10.14"
 Port = 9559
 convertedFile = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
-
+    
 
 
 class Reader:
@@ -29,7 +29,7 @@ class Reader:
             line = lines[0]
             line = line.lower()
             line = re.split("author:",line)
-        self.tts.say("Today we are going to read a story book. Named "+line[0])
+        self.tts.say("Today we are going to read a story book. \\pau=1000\\ Named "+line[0])
         self.tts.say("The author is: "+line[1])
         self.tts.say(" Remember if we read from this author before? ")
     
@@ -58,7 +58,7 @@ class Reader:
             sentence = re.split("\.",globalSentence)
             #print "sentence", sentence
             gaze.subscribe("ALGazeAnalysis")
-            memoryProxy.subscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis",IP)
+            memoryProxy.subscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",IP)
             for sytax in sentence:
                 
                 toleranceRange = gaze.getTolerance()
@@ -69,10 +69,11 @@ class Reader:
             
                 time.sleep(2)
                 
-                PeopleId = memoryProxy.getData("PeoplePerception/PeopleList")
+                PeopleId = memoryProxy.getData("PeoplePerception/VisiblePeopleList")
                 print"FaceGlobalId", globalFace
                 print"FaceId", PeopleId
                 faceData = faceProxy.getLearnedFacesList()
+                
                 targetPosition = self.tracker.getTargetPosition(0)
                 print targetPosition
                 if globalFace != PeopleId:
@@ -149,7 +150,7 @@ class Reader:
                 #if count 
                 print "sytax", output
                 #tts.setParameter("speed", 50)
-                atts.say(output,{"bodyLanguageMode":"random"})
+                atts.say(output.lower(),{"bodyLanguageMode":"random"})
     
     
 

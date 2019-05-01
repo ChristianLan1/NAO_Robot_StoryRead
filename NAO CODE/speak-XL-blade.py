@@ -149,3 +149,16 @@ with open('C:/Users/xinjie/OneDrive/NAO CODE/output.txt') as f:
 
 #motion.wait(threadMove,0)
 #atts.say("Hello! Nice to meet you!", {"bodyLanguageMode":"contextual"})
+
+class Reader:
+    def __init__(self, filename):
+        self.filename = filename
+
+    def read(self):
+        with open(self.filename) as f:
+            r = readlines(f)
+
+
+if __name__ == "__main__":
+    r = Reader('c:\testfile.txt')
+    r.read()
