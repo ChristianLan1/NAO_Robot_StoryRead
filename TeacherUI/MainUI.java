@@ -100,9 +100,7 @@ public class MainUI {
 		mainframe.getContentPane().add(searchField);
 		searchField.setColumns(10);
 		
-		JButton btnSearch = new JButton("Search");
-		btnSearch.setBounds(442, 6, 80, 29);
-		mainframe.getContentPane().add(btnSearch);
+
 		
 		//close the main window and open the upload window when clicking "upload my books"
 		JButton btnChooseYourBooks = new JButton("Upload my books");
@@ -172,6 +170,31 @@ public class MainUI {
 		});
 		btnComfirm.setBounds(381, 312, 117, 29);
 		mainWindow.mainframe.getContentPane().add(btnComfirm);
+		
+		//search the files by typing in the key words
+		JButton btnSearch = new JButton("Search");
+		btnSearch.setBounds(442, 6, 80, 29);
+		mainWindow.mainframe.getContentPane().add(btnSearch);
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				((DefaultListModel)list.getModel()).clear();
+				if(fileLists.length != 0){
+					for (int i = 0; i < fileLists.length; i++) {
+					    if(fileLists[i].isFile()) {
+					    	((DefaultListModel)list.getModel()).addElement(fileLists[i].getName().substring(0, fileLists[i].getName().length()-4));
+					    }
+				    }
+				}
+				String searchText = mainWindow.searchField.getText().trim();
+				int listSize = ((DefaultListModel)list.getModel()).size();	
+				for(int i=0; i<listSize;i++){
+					String listObj = ((DefaultListModel)list.getModel()).getElementAt(i).toString();
+					if(!listObj.contains(searchText)){
+						((DefaultListModel)list.getModel()).remove(i);
+					}
+				}
+			}
+		});
 		
 		
 		
