@@ -6,6 +6,7 @@ import time
 import io
 # -*- coding: utf-8 -*-
 import sys, os
+import PDF_Client
 
 IP = "172.20.10.14"
 Port = 9559
@@ -14,13 +15,14 @@ convertedFile = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
 
 
 class Reader:
-    def __init__(self, filename, tts, tracker):
+    def __init__(self, filename, tts, tracker,connectionToPdf):
         self.filename = filename
         self.tts = tts
         self.tracker = tracker
         self.pages = [1,2,3,4,5,6,7,8,9,10,11]
         self.countPage = 0
         self.turnPage = 0
+        self.connectionToPdf = connectionToPdf
     def readAuthor(self):
         convert("60744-whoop-goes-the-pufferfish.pdf",[0])#getting author info
         with open(self.filename) as f:
@@ -131,6 +133,8 @@ class Reader:
                     
                 
                 if page:
+                    self.connectionToPdf.turnPage()
+                    #Send a msg to pdf displayer to turn page
                     self.countPage = self.countPage + 1
                     pagenum = self.pages[self.countPage]
                     if dictTxt[pagenum] == "rightbottom":
@@ -187,6 +191,8 @@ class SoundFeedback:
 
 
 if __name__ == "__main__":
+    
+
     gaze = ALProxy("ALGazeAnalysis",IP,Port)
     tts = ALProxy("ALTextToSpeech", IP,Port)
     atts = ALProxy("ALAnimatedSpeech",IP,Port)
@@ -194,6 +200,18 @@ if __name__ == "__main__":
     memoryProxy = ALProxy("ALMemory", IP, 9559)
     motion = ALProxy("ALMotion", IP ,Port)
     postureProxy = ALProxy("ALRobotPosture", IP, 9559)
+    voice = SoundFeedback(asr,memoryProxy)
+
+    connectionToPdf = client()
+    is_Connected = connectionToPdf.connection()
+    while(not is_Connected):
+        tts.say("The PDF Application is not opened.")
+        tts.say("Please open the PDF displayer so that I can show the book to you.")
+        time.sleep(1)
+        tts.say("When the PDF displayer opened, please talk to me")
+        data = voice.getVoiceRec()
+        if data[0] == "connected":
+
     
     #initializePosture
     motion.rest
@@ -252,10 +270,10 @@ if __name__ == "__main__":
     tts.say("Alright, we are ready to go!")
     time.sleep(1)
     
-    r = Reader(convertedFile,tts,tracker)
+    r = Reader(convertedFile,tts,tracker,connectionToPdf)
     r.readAuthor()
 
-    voice = SoundFeedback(asr,memoryProxy)
+    
     #The robot will stand up at this sytax. No idea why
     data = voice.getVoiceRec()
     if data[0] == "yes":
