@@ -9,7 +9,7 @@ import sys, os
 import PDF_Client
 
 class Reader:
-    def __init__(self, filename, tts, tracker,connectionToPdf):
+    def __init__(self, filename, tts, tracker,connectionToPdf,IP):
         self.filename = filename
         self.tts = tts
         self.tracker = tracker
@@ -17,6 +17,7 @@ class Reader:
         self.countPage = 0
         self.turnPage = 0
         self.connectionToPdf = connectionToPdf
+        self.IP = IP
     def readAuthor(self):
         convert("60744-whoop-goes-the-pufferfish.pdf",[0])#getting author info
         with open(self.filename) as f:
@@ -54,12 +55,12 @@ class Reader:
             sentence = re.split("\.",globalSentence)
             #print "sentence", sentence
             gaze.subscribe("ALGazeAnalysis")
-            memoryProxy.subscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",IP)
+            memoryProxy.subscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",self.IP)
             for sytax in sentence:
                 
                 toleranceRange = gaze.getTolerance()
                 print"range",toleranceRange
-                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",IP)
+                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",self.self.IP)
                 #print"look back"
                 
             
@@ -68,7 +69,7 @@ class Reader:
                 PeopleId = memoryProxy.getData("PeoplePerception/VisiblePeopleList")
                 print"FaceGlobalId", globalFace
                 print"FaceId", PeopleId
-                faceData = faceProxy.getLearnedFacesList()
+                #faceData = faceProxy.getLearnedFacesList()
                 
                 targetPosition = self.tracker.getTargetPosition(0)
                 print targetPosition
@@ -83,27 +84,28 @@ class Reader:
                 #print( "visualData: %s" % visualData )
                 #time.sleep(2)
                 #memoryProxy.unsubscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis")
-                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",IP)
+                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",self.IP)
                 time.sleep(2)
-                print faceData
-                if len(PeopleId) != 0 and not jump or faceData == "Child":
+                #print faceData
+                if len(PeopleId) != 0 and not jump:
                     try:
                         visualData = memoryProxy.getData("PeoplePerception/Person/"+str(PeopleId[0])+"/IsLookingAtRobot")
                         print( "visualData: %s" % visualData )
-                        LedProxy = ALProxy("ALLeds", IP, 9559)
+                        LedProxy = ALProxy("ALLeds", self.IP, 9559)
                         LedProxy.randomEyes(2)
                         if visualData != 1:
-                            tts.say("Hey my little friend!")
-                            tts.say("Can you tell me what just happened in the story?")
+                            #add dialog here
+                            self.tts.say("Hey my little friend!")
+                            self.tts.say("Can you tell me what just happened in the story?")
                             listen = SoundFeedback(asr,memoryProxy)
                             sound = listen.getVoiceRec()
                             if sound == "No":
-                                tts.say("Aw")
-                                tts.say("I would feel sad if you are not reading it with me")
-                                tts.say("Please come back")
+                                self.tts.say("Aw")
+                                self.tts.say("I would feel sad if you are not reading it with me")
+                                self.tts.say("Please come back")
                             else:
-                                tts.say("That's right!")
-                                tts.say("Let's continue!")
+                                self.tts.say("That's right!")
+                                self.tts.say("Let's continue!")
 
                     except RuntimeError:
                         print"skip the error"
@@ -120,7 +122,7 @@ class Reader:
                         location = dictTxt[pagenum]
                     self.turnPage = 1
                     #self.tracker.setTimeOut(2000)
-                    tts.say("Let's look at this picture")
+                    self.tts.say("Let's look at this picture")
                     armMotion.point(location)
                     #self.tracker.lookAt(targetPosition,0,0.5,False)
                     
@@ -138,10 +140,10 @@ class Reader:
                     #location = self.locationToPoint(pagenum)
                     #self.tracker.setTimeOut(2000)
                     armMotion.point(location)
-                    tts.say("Let's look at this sentence")
+                    self.tts.say("Let's look at this sentence")
                 self.tracker.lookAt(targetPosition,0,0.5,False)
                 
-                time.sleep(1)
+                time.sleep(0.5)
 
                 output = re.sub("([0-9]+)\/[0-9]+","",sytax)
                 count += 1

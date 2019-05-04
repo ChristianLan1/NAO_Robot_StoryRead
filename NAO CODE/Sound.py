@@ -33,7 +33,7 @@ class SoundFeedback:
         self.asr.pause(True)
         self.asr.setLanguage("English")
 
-        vocabulary = ["yes", "ok","done","connected","finished"]
+        vocabulary = ["yes", "ok","done","connected","finished","ready"]
 
         self.asr.setVocabulary(vocabulary, False)
         self.asr.subscribe(self.IP)

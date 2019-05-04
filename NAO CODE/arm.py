@@ -28,7 +28,21 @@ class ArmMotion:
         self.motionProxy.angleInterpolation(self.names, self.angleLists, self.times, self.isAbsolute)
         self.motionProxy.openHand('LHand')
         #say "put a pen in my hand"
-        time.sleep(2.0)
+        while(True):
+                self.memory.subscribeToEvent("MiddleTactilTouched", "ReactToTouch", "172.20.10.14")
+                time.sleep(3)
+                touchOrNot = self.memory.getData("MiddleTactilTouched")
+            
+                print(touchOrNot)
+                #if (['Head/Touch/Middle', False] or ['Head/Touch/Middle', True]) in touchOrNot:
+                if touchOrNot == 1.0:
+                    #hold pen completed
+                    self.memory.unsubscribeToEvent("MiddleTactilTouched","ReactToTouch")
+                    self.postureProxy.goToPosture("Crouch",1.0)
+                    break
+                else:
+                    time.sleep(1)
+        #time.sleep(1.0)
         self.motionProxy.closeHand('LHand')
 
         self.postureProxy.goToPosture("Crouch",1.0)

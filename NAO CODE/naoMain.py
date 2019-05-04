@@ -21,8 +21,8 @@ dialogFile = "/home/nao/home/nao/qitopics_enu.top"
 
 
 
-def pdfConnection(tts,voice):
-    connectionToPdf = PDF_Client.client()
+def pdfConnection(tts,voice,connectionToPdf):
+    
     is_Connected = connectionToPdf.connection()
     if not is_Connected:
         tts.say("The PDF Application is not opened.")
@@ -164,40 +164,44 @@ if __name__ == "__main__":
     dialog.setLanguage("English")
     dialogFile = dialogFile.decode('utf-8')
     topic = dialog.loadTopic(dialogFile.encode('utf-8'))
+    connectionToPdf = PDF_Client.client()
 
     
 
     #Setup Connection to PDF
-    #pdfConnection(tts,voice)
-    #tts.say("Connection successful")
-    #tts.say("Now, initilizing calibration")
+    pdfConnection(tts,voice,connectionToPdf)
+    tts.say("Connection successful")
+    tts.say("Now, initilizing calibration")
     
     #Setup Calibration
-    calibrationInstance = calibration.Calibrations(motion,postureProxy,tts,IP,Port)
+    armMotion = arm.ArmMotion(motion,memoryProxy,postureProxy)
+    calibrationInstance = calibration.Calibrations(motion,postureProxy,tts,IP,Port,armMotion)
     calibrationInstance.setupCalibration(memoryProxy)
     tts.say("Now I'm propertly setup.")
     tts.say("Do you want to begin now?")
-    #Setup Face Tracker
+    
     data = voice.getVoiceRec()
     if not data[0] == "no":
         tts.say("Alright, we are ready to go!")
+        #Setup Face Tracker
         trackChild(tracker,faceProxy,peopleProxy)
     else:
         tts.say("Ok!")
-        tts.say("Let's me know when you are ready")
+        tts.say("Let me know when you are ready")
         data = voice.waitFeedback()
         if data:
             #Setup Reader
+            tts.say("Alright, we are ready to go!")
             readInstance = Reader.Reader(convertedFile,tts,tracker,connectionToPdf)
             readInstance.readAuthor()
 
     
     
-    """time.sleep(1)
+    time.sleep(1)
     
 
     
-    #The robot will stand up at this sytax. No idea why
+    #The robot will stand up at this sytax sometimes. No idea why
     data = voice.getVoiceRec()
     if data[0] == "yes":
         tts.say("Do you remember what we liked about that story? Here's another book by this author.")
@@ -205,12 +209,13 @@ if __name__ == "__main__":
     else:
         tts.say("OK! Let's read it")
 
-    r.readContent(gaze,memoryProxy,atts,asr,armMotion,faceProxy)
+    readInstance = Reader.Reader(convertedFile,tts,tracker,connectionToPdf,IP)
+    readInstance.readContent(gaze,memoryProxy,atts,asr,armMotion,faceProxy)
 
 
     gaze.unsubscribe("ALGazeAnalysis")
     tracker.stopTracker()
     tracker.unregisterAllTargets()
     motion.rest()
-"""
+
 
