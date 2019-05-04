@@ -24,7 +24,7 @@ class SoundFeedback:
 
         self.asr.unsubscribe(self.IP)
 
-        data=memoryProxy.getData("WordRecognized")
+        data= self.memoryProxy.getData("WordRecognized")
         print( "data: %s" % data )
         
         return data

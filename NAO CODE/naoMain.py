@@ -14,9 +14,9 @@ import calibration
 IP = "172.20.10.14"
 Port = 9559
 convertedFile = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
-dialogFile = '/behaviours/qitopics.top'
+dialogFile = "/home/nao/home/nao/qitopics_enu.top"
     
-
+#dialogFile = os.path.abspath("\home\\nao\qitopics_enu.top")
 
 
 
@@ -29,25 +29,121 @@ def pdfConnection(tts,voice):
         tts.say("Please open the PDF displayer so that I can show the book to you.")
         time.sleep(1)
         tts.say("When the PDF displayer opened, please talk to me")
+    dialog.subscribe('myModule')
+    #dialog.activateTopic(topic)
+    print "initilized dialog"
     while(not is_Connected):
         
         time.sleep(0.5)
+        
         #dialog.subscribe('myModule')
 
         # Activate dialog
-        #dialog.activateTopic(topic)
-        data = voice.waitFeedback()
-        print data
+        dialog.activateTopic(topic)
         
-        if data[0]:
-            tts.say("Let me check if the connection to PDF Displayer")
+        memoryProxy.removeData("Dialog/Answered")
+        memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
+        #time.sleep(5)
+        
+        dialogOutput = memoryProxy.getData("Dialog/Answered")
+        print "first dialog debug", dialogOutput
+        while(dialogOutput == None):
+            print "no response"
+            time.sleep(1)
+            dialogOutput = memoryProxy.getData("Dialog/Answered")
+            
+            print dialogOutput
+        if dialogOutput.startswith("You"):
+            print "debug"
+            tts.say("Let me check the connection to PDF Displayer")
             is_Connected = connectionToPdf.connection()
+        
             if not is_Connected:
                 tts.say("I still can't find the displayer")
                 tts.say("Can you double check the PDF application.")
                 tts.say("Thanks a lot!")
+                dialog.deactivateTopic(topic)
+                # Unload topic
+                #dialog.unloadTopic(topic)
+                # Stop dialog
+                #dialog.unsubscribe('myModule')
+            
+
+
+
+
+
+
+        
+
+        
+
+        
+        """data = voice.waitFeedback()
+        print data
+        
+        if data[0]:
+            
+            if not is_Connected:
+                tts.say("I still can't find the displayer")
+                tts.say("Can you double check the PDF application.")
+                tts.say("Thanks a lot!")"""
+    
+def trackChild(tracker,faceProxy,peopleProxy):
+    targetName = "Face"
+    faceWidth = 0.2
+    peopleProxy.setTimeBeforePersonDisappears(10)
+    #peopleProxy.subscribeToEvent("PeoplePerception/PeopleList")
+    """memoryProxy.subscribeToEvent("PeoplePerception/PeopleList","PeopleTracker",IP)
+    
+    PeopleId = memoryProxy.getData("PeoplePerception/PeopleList")
+    while(len(PeopleId) ==0):
+        time.sleep(2)
+        PeopleId = memoryProxy.getData("PeoplePerception/PeopleList")
+
+    print PeopleId"""
+    #tracker.registerTarget(targetName, PeopleId)
+    tracker.registerTarget(targetName, faceWidth)
+    # Then, start tracker.
+    tracker.track(targetName)
+    print "ALTracker successfully started, now show your face to robot!"
+    
+    #faceProxy.clearDatabase()
+    #faceProxy.setTrackingEnabled(True)
+    #faceProxy.subscribe("Child", 600, 0.0 )
+    #tracker.toggleSearch(True)
+    #motion.wakeUp()
+    #motion.stiffnessInterpolation("Head", 1.0, 1.0)
+    tts.say("If you are ready to read with me, please look at me")
+    try:
+        while(tracker.isTargetLost()):
+            
+            #faceProxy.learnFace("Child")
+            search = tracker.isSearchEnabled()
+            print search
+            #if not search:
+            tracker.toggleSearch(True)
+            time.sleep(5)
+            tracker.toggleSearch(False)
+            #tracker.toggleSearch(False)
+            print"looking for target"
+            
+    except KeyboardInterrupt:
+        printc
+        print"Interrupted by user"
+    #faceData = memoryProxy.getData("FaceDetected")
+    #tracker.toggleSearch(False)
+    """faceData = faceProxy.getLearnedFacesList()
+    if len(faceData) == 0:
+        faceProxy.learnFace("Child")
+        time.sleep(8)
+    print faceData"""
+    PeopleId = memoryProxy.getData("PeoplePerception/PeopleList")
+    print PeopleId
+    
     
 
+    
 
 
 if __name__ == "__main__":
@@ -63,28 +159,42 @@ if __name__ == "__main__":
     tracker = ALProxy("ALTracker", IP, Port)
     faceProxy = ALProxy("ALFaceDetection", IP, Port)
     voice = Sound.SoundFeedback(asr,memoryProxy,IP)
-    
-    """dialog = ALProxy('ALDialog', IP, Port)
+    peopleProxy = ALProxy("ALPeoplePerception",IP,Port)
+    dialog = ALProxy('ALDialog', IP, Port)
     dialog.setLanguage("English")
     dialogFile = dialogFile.decode('utf-8')
     topic = dialog.loadTopic(dialogFile.encode('utf-8'))
 
-    dialog.subscribe('myModule')
-    dialog.activateTopic(topic)"""
+    
+
     #Setup Connection to PDF
     #pdfConnection(tts,voice)
+    #tts.say("Connection successful")
+    #tts.say("Now, initilizing calibration")
     
     #Setup Calibration
     calibrationInstance = calibration.Calibrations(motion,postureProxy,tts,IP,Port)
-    calibrationInstance.setupCalibration(motion,memoryProxy,tracker)
+    calibrationInstance.setupCalibration(memoryProxy)
+    tts.say("Now I'm propertly setup.")
+    tts.say("Do you want to begin now?")
     #Setup Face Tracker
-    trackChild(tracker,faceProxy)
-    tts.say("Alright, we are ready to go!")
+    data = voice.getVoiceRec()
+    if not data[0] == "no":
+        tts.say("Alright, we are ready to go!")
+        trackChild(tracker,faceProxy,peopleProxy)
+    else:
+        tts.say("Ok!")
+        tts.say("Let's me know when you are ready")
+        data = voice.waitFeedback()
+        if data:
+            #Setup Reader
+            readInstance = Reader.Reader(convertedFile,tts,tracker,connectionToPdf)
+            readInstance.readAuthor()
+
     
-    time.sleep(1)
-    #Setup Reader
-    r = Reader.Reader(convertedFile,tts,tracker,connectionToPdf)
-    r.readAuthor()
+    
+    """time.sleep(1)
+    
 
     
     #The robot will stand up at this sytax. No idea why
@@ -102,37 +212,5 @@ if __name__ == "__main__":
     tracker.stopTracker()
     tracker.unregisterAllTargets()
     motion.rest()
+"""
 
-
-def trackChild(tracker,):
-    targetName = "Face"
-    faceWidth = 0.1
-    tracker.registerTarget(targetName, faceWidth)
-    # Then, start tracker.
-    tracker.track(targetName)
-    print "ALTracker successfully started, now show your face to robot!"
-    
-    faceProxy.clearDatabase()
-    faceProxy.setTrackingEnabled(True)
-    faceProxy.subscribe("Child", 600, 0.0 )
-    #tracker.toggleSearch(True)
-    
-    try:
-        while(tracker.isTargetLost()):
-            self.tts.say("If you are ready to read with me, please look at me for 10 seconds")
-            faceProxy.learnFace("Child")
-            time.sleep(8)
-            print"looking for target"
-    except KeyboardInterrupt:
-        printc
-        print"Interrupted by user"
-    #faceData = memoryProxy.getData("FaceDetected")
-    #tracker.toggleSearch(False)
-    faceData = faceProxy.getLearnedFacesList()
-    if len(faceData) == 0:
-        faceProxy.learnFace("Child")
-        time.sleep(8)
-    print faceData
-
-
-    

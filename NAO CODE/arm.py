@@ -18,18 +18,21 @@ class ArmMotion:
 
 
         #hold pen
-        names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
-        angleLists = [-60.0*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 5.0*almath.TO_RAD,100.0*almath.TO_RAD,
+        self.names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
+        self.angleLists = [-60.0*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 5.0*almath.TO_RAD,100.0*almath.TO_RAD,
                     30.0*almath.TO_RAD, -10.0*almath.TO_RAD]
-        times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
-        isAbsolute = True
-        self.motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
+        self.times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
+        self.isAbsolute = True
+        
+    def holdPen(self):
+        self.motionProxy.angleInterpolation(self.names, self.angleLists, self.times, self.isAbsolute)
         self.motionProxy.openHand('LHand')
         #say "put a pen in my hand"
         time.sleep(2.0)
         self.motionProxy.closeHand('LHand')
 
         self.postureProxy.goToPosture("Crouch",1.0)
+
 
     def point(self,location):
         if location == "calibration":
