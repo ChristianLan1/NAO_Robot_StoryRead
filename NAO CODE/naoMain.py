@@ -101,7 +101,7 @@ def trackChild(tracker,faceProxy,peopleProxy):
     #peopleProxy.subscribeToEvent("PeoplePerception/PeopleList")
     memoryProxy.removeData("PeoplePerception/PeopleList")
     memoryProxy.subscribeToEvent("PeoplePerception/PeopleList","PeopleTracker",IP)
-    
+    tts.say("Hello my friend, please show your face to me if you are ready to read with me")
     PeopleId = memoryProxy.getData("PeoplePerception/PeopleList")
     while(PeopleId == None or len(PeopleId) ==0):
         time.sleep(2)
@@ -120,7 +120,7 @@ def trackChild(tracker,faceProxy,peopleProxy):
     #tracker.toggleSearch(True)
     #motion.wakeUp()
     #motion.stiffnessInterpolation("Head", 1.0, 1.0)
-    tts.say("If you are ready to read with me, please look at me")
+    #tts.say("If you are ready to read with me, please look at me")
     try:
         while(tracker.isTargetLost()):
             
@@ -151,14 +151,37 @@ def trackChild(tracker,faceProxy,peopleProxy):
     
 
     
+def dialogSetup(self,topics,is_Topic):
+    dialog.subscribe('myModule')
+    dialog.activateTopic(topics)
+    #dialog.forceOutput()
+    if is_Topic:
+
+        dialog.gotoTopic("begin")
+    memoryProxy.removeData("Dialog/Answered")
+    memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
+
+    dialogOutput = memoryProxy.getData("Dialog/Answered")
+    while(dialogOutput == None):
+        time.sleep(1)
+        dialogOutput = memoryProxy.getData("Dialog/Answered")
+    dialog.deactivateTopic(topic)
+    # Unload topic
+    #dialog.unloadTopic(topic)
+    # Stop dialog
+    dialog.unsubscribe('myModule')
+    memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
+    
+    return dialogOutput
+
 
 
 if __name__ == "__main__":
     
 
-    gaze = ALProxy("ALGazeAnalysis",IP,Port)
+    
     tts = ALProxy("ALTextToSpeech", IP,Port)
-    atts = ALProxy("ALAnimatedSpeech",IP,Port)
+    
     asr = ALProxy("ALSpeechRecognition", IP, Port)
     memoryProxy = ALProxy("ALMemory", IP, Port)
     motion = ALProxy("ALMotion", IP ,Port)
@@ -220,6 +243,10 @@ if __name__ == "__main__":
             print "begin read author"
             readInstance = Reader.Reader(convertedFile,tts,tracker,connectionToPdf,IP)
             readInstance.readAuthor()
+            dialogOutput = dialogSetup(topic,False)
+            
+
+            
             
             break
         else:
@@ -232,7 +259,7 @@ if __name__ == "__main__":
 
 
     
-    tts.say("Now I'm propertly setup.")
+    """tts.say("Now I'm propertly setup.")
     tts.say("Do you want to begin now?")
     
     
@@ -249,7 +276,8 @@ if __name__ == "__main__":
             #Setup Reader
             tts.say("Alright, we are ready to go!")
             readInstance = Reader.Reader(convertedFile,tts,tracker,connectionToPdf)
-            readInstance.readAuthor()
+            readInstance.readAuthor()"""
+            
     
 
     
@@ -259,18 +287,18 @@ if __name__ == "__main__":
 
     
     #The robot will stand up at this sytax sometimes. No idea why
-    data = voice.getVoiceRec()
+    """data = voice.getVoiceRec()
     if data[0] == "yes":
         tts.say("Do you remember what we liked about that story? Here's another book by this author.")
         tts.say("Let's read this one and see if we like it as well as the other book we read")
     else:
-        tts.say("OK! Let's read it")
+        tts.say("OK! Let's read it")"""
 
     readInstance = Reader.Reader(convertedFile,tts,tracker,connectionToPdf,IP)
-    readInstance.readContent(gaze,memoryProxy,atts,asr,armMotion,faceProxy)
+    readInstance.readContent(memoryProxy,asr,armMotion,dialog,topic)
 
 
-    gaze.unsubscribe("ALGazeAnalysis")
+    
     tracker.stopTracker()
     tracker.unregisterAllTargets()
     motion.rest()

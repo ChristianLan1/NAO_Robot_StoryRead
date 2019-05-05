@@ -30,7 +30,11 @@ class Reader:
         self.tts.say("The author is: "+line[1])
         self.tts.say(" Remember if we read from this author before? ")
     
-    def readContent(self,gaze,memoryProxy,atts,asr,armMotion,faceProxy):
+    def readContent(self,memoryProxy,asr,armMotion,dialog,topic):
+
+        gaze = ALProxy("ALGazeAnalysis",IP,Port)
+        atts = ALProxy("ALAnimatedSpeech",IP,Port)
+
         globalSentence = """"""
         count = 0
         globalFace = 9999
@@ -95,7 +99,24 @@ class Reader:
                         LedProxy.randomEyes(2)
                         if visualData != 1:
                             #add dialog here
-                            self.tts.say("Hey my little friend!")
+                            dialog.subscribe('myModule')
+                            dialog.activateTopic(topics)
+                            #dialog.forceOutput()
+                            dialog.gotoTopic("pay attention")
+                            """memoryProxy.removeData("Dialog/Answered")
+                            memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
+
+                            dialogOutput = memoryProxy.getData("Dialog/Answered")
+                            while(dialogOutput == None):
+                                time.sleep(1)
+                                dialogOutput = memoryProxy.getData("Dialog/Answered")"""
+                            dialog.deactivateTopic(topic)
+                            # Unload topic
+                            #dialog.unloadTopic(topic)
+                            # Stop dialog
+                            dialog.unsubscribe('myModule')
+                            #memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
+                            """self.tts.say("Hey my little friend!")
                             self.tts.say("Can you tell me what just happened in the story?")
                             listen = SoundFeedback(asr,memoryProxy)
                             sound = listen.getVoiceRec()
@@ -105,7 +126,7 @@ class Reader:
                                 self.tts.say("Please come back")
                             else:
                                 self.tts.say("That's right!")
-                                self.tts.say("Let's continue!")
+                                self.tts.say("Let's continue!")"""
 
                     except RuntimeError:
                         print"skip the error"
@@ -151,5 +172,6 @@ class Reader:
                 print "sytax", output
                 #tts.setParameter("speed", 50)
                 atts.say(output.lower(),{"bodyLanguageMode":"random"})
+        gaze.unsubscribe("ALGazeAnalysis")
     
     
