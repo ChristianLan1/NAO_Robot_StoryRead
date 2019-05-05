@@ -11,8 +11,8 @@ class Calibrations:
     
     def setupCalibration(self,memoryProxy):
         #initializePosture
-        self.motion.rest
-        #self.postureProxy.goToPosture("Crouch",0.5)
+        #self.motion.rest
+        self.postureProxy.goToPosture("Crouch",0.5)
 
         #InitializeMotion
         #self.motion.wakeUp()

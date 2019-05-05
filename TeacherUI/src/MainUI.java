@@ -129,7 +129,7 @@ public class MainUI {
 	}
 	public static void main(String[] args) throws IOException {
 		
-		File folder = new File("/C:/Users/Christian Lan/OneDrive/NAO CODE/books");
+		File folder = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/books");
 		folder.mkdir();
 		if(folder.exists()==false){
 			folder.createNewFile();

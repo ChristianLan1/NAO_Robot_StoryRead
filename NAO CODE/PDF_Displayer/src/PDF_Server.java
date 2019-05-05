@@ -158,7 +158,7 @@ public class PDF_Server{
 				
 				//set the book cover as the first page
 				imgLabel.setText("");
-				Image pageImg = new ImageIcon("/C:/Users/Christian Lan/OneDrive/NAO CODE/imgs/1.png").getImage();
+				Image pageImg = new ImageIcon("C:/Users/Christian Lan/OneDrive/NAO CODE/imgs/1.png").getImage();
 				Image scaledImage = pageImg.getScaledInstance(imgLabel.getWidth(),imgLabel.getHeight(),Image.SCALE_SMOOTH);
 				ImageIcon icon = new ImageIcon(scaledImage);
 				imgLabel.setIcon(icon);
@@ -241,12 +241,12 @@ public class PDF_Server{
 //read the book_pages.txt file to get the pages
 private String[] getBookPages() throws IOException{
 	String[] pages = null;
-	File book_pages = new File("/C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
+	File book_pages = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
 	if(!book_pages.exists()){
 		System.out.println("There is no chosen book.");
 	}else{
         String lines = null;
-        FileReader fileReader = new FileReader("/C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
+        FileReader fileReader = new FileReader("C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         int count = 0;
         while((lines=bufferedReader.readLine()) != null) {
@@ -269,12 +269,12 @@ private String[] getBookPages() throws IOException{
 //read the book_pages.txt file to get the books
 private String getBookTitle() throws IOException{
 		String bookTitle = null;
-		File book_pages = new File("/C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
+		File book_pages = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
 		if(!book_pages.exists()){
 			System.out.println("There is no chosen book.");
 		}else{
           String line = null;
-          FileReader fileReader = new FileReader("/C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
+          FileReader fileReader = new FileReader("C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
           BufferedReader bufferedReader = new BufferedReader(fileReader);
           int count = 0;
           while((line=bufferedReader.readLine()) != null) {
@@ -294,7 +294,7 @@ private String getBookTitle() throws IOException{
 private void convert(String bookTitle){
 		try {
 			
-			File pdfFile = new File("/C:/Users/Christian Lan/OneDrive/NAO CODE/books/"+ bookTitle);
+			File pdfFile = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/books/"+ bookTitle);
 			if(!pdfFile.exists()){
 				System.out.println("Book not found.");
 			}else{
@@ -302,7 +302,7 @@ private void convert(String bookTitle){
 				List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
 				int page = 0;
 				
-				File folder = new File("/C:/Users/Christian Lan/OneDrive/NAO CODE/imgs");
+				File folder = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/imgs");
 				folder.mkdir();
 				if(folder.exists()==false){
 					folder.createNewFile();
@@ -312,7 +312,7 @@ private void convert(String bookTitle){
 				{ 
 				    ++page;
 				    BufferedImage bim = pdPage.convertToImage(BufferedImage.TYPE_INT_RGB, 300);
-				    ImageIOUtil.writeImage(bim,"png", "/C:/Users/Christian Lan/OneDrive/NAO CODE/imgs/" + page,BufferedImage.TYPE_INT_RGB, 300);
+				    ImageIOUtil.writeImage(bim,"png", "C:/Users/Christian Lan/OneDrive/NAO CODE/imgs/" + page,BufferedImage.TYPE_INT_RGB, 300);
 				}
 				document.close();
 			}
@@ -323,7 +323,7 @@ private void convert(String bookTitle){
 		}
 //set the pane with images
 private void turnPage(int pagenum){
-	Image pageImg = new ImageIcon("/C:/Users/Christian Lan/OneDrive/NAO CODE/imgs/" + pagenum + ".png").getImage();
+	Image pageImg = new ImageIcon("C:/Users/Christian Lan/OneDrive/NAO CODE/imgs/" + pagenum + ".png").getImage();
 	Image scaledImage = pageImg.getScaledInstance(imgLabel.getWidth(),imgLabel.getHeight(),Image.SCALE_SMOOTH);
 	ImageIcon icon = new ImageIcon(scaledImage);
 	imgLabel.setIcon(icon);

@@ -6,7 +6,7 @@ class SoundFeedback:
         self.IP = IP
         
     def getVoiceRec(self):
-        self.asr.setVisualExpression(True)
+        #self.asr.setVisualExpression(True)
         self.asr.pause(True)
         self.asr.setLanguage("English")
 
@@ -17,6 +17,7 @@ class SoundFeedback:
         print "speech recognition engine started"
 
         #memoryProxy = ALProxy("ALMemory", self.IP, 9559)
+        self.memoryProxy.removeData('WordRecognized')
         self.memoryProxy.subscribeToEvent('WordRecognized',self.IP,self.IP)
         #asr.removeAllContext()
         self.asr.pause(False)
@@ -24,8 +25,9 @@ class SoundFeedback:
 
         self.asr.unsubscribe(self.IP)
 
-        data= self.memoryProxy.getData("WordRecognized")
+        data= self.memoryProxy.getData('WordRecognized')
         print( "data: %s" % data )
+        self.memoryProxy.subscribeToEvent('WordRecognized',self.IP,self.IP)
         
         return data
     def waitFeedback(self):

@@ -158,7 +158,7 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 					
 					PrintWriter writer;
 					try {
-						File pageText = new File("/C:/Users/Christian Lan/OneDrive/NAO CODE/"+ mainframe.list.getSelectedValue()+"_pages.txt");
+						File pageText = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
 						if(pageText.exists()==false){
 							pageText.createNewFile();
 						}

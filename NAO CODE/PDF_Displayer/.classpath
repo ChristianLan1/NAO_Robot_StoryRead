@@ -5,5 +5,8 @@
 	<classpathentry kind="lib" path="/Users/rose/Downloads/pdfbox-1.8.3.jar"/>
 	<classpathentry kind="lib" path="/Users/rose/Downloads/org-apache-commons-logging.jar"/>
 	<classpathentry kind="lib" path="/Users/rose/Downloads/fontbox-1.8.16.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Christian Lan/OneDrive/nao_story_read/NAO CODE/PDF_Displayer/Libraries/fontbox-1.8.16.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Christian Lan/OneDrive/nao_story_read/NAO CODE/PDF_Displayer/Libraries/org-apache-commons-logging.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Christian Lan/OneDrive/nao_story_read/NAO CODE/PDF_Displayer/Libraries/pdfbox-1.8.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

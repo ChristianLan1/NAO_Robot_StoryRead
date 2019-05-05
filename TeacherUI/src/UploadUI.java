@@ -143,7 +143,7 @@ public class UploadUI<ClientUI> extends JFrame {
 			    				public void actionPerformed(ActionEvent e) {
 			    					//copy the file to the the dictionary with the python files
 			    					File bookfile = c.getSelectedFile();
-			    					File copyfile = new File("/C:/Users/Christian Lan/OneDrive/NAO CODE/books/"+fileName);//test path
+			    					File copyfile = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/books/"+fileName);//test path
 			    					
 			    						if(copyfile.exists()){
 			    							System.out.println("what's wrong");
