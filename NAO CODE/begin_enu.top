@@ -2,7 +2,7 @@ topic: ~begin()
 language: enu
 
 # Defining needed concepts, keywords or sentences corresponding to a concept.
-concept:(yes) [yes "all right" sure "why not" ok certainly "very well" yep yea definitely amen]
+concept:(yes) [yes "all right" sure "why not" ok certainly "very well" yep yea definitely amen {I'm} ready prepared]
 concept:(no) [no nope "not really" "not yet" "don't want" "no way" never "not at all"]
 
 concept:(repeat) [repeat understand]

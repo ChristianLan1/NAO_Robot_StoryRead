@@ -8,7 +8,7 @@ from pdfminer.pdfparser import PDFParser
 from pdfminer.layout import LTTextBox, LTTextLine, LTFigure, LTImage,LTPage
 import re
 import sys, os
-sys.path.append('NAO CODE/')
+sys.path.append('NAO CODE/books/')
 
 locationImg = []
 locationTxt = []

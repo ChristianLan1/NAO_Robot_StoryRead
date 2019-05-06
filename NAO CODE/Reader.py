@@ -9,17 +9,21 @@ import sys, os
 import PDF_Client
 
 class Reader:
-    def __init__(self, filename, tts, tracker,connectionToPdf,IP):
+    def __init__(self, filename, tts, tracker,connectionToPdf,IP,book):
         self.filename = filename
         self.tts = tts
         self.tracker = tracker
-        self.pages = [1,2,3,4,5,6,7,8,9,10,11]
+        
         self.countPage = 0
         self.turnPage = 0
         self.connectionToPdf = connectionToPdf
         self.IP = IP
+        self.book = book
+        self.bookTitle = book[0]
+        self.pages = book[1]
+
     def readAuthor(self):
-        convert("60744-whoop-goes-the-pufferfish.pdf",[0])#getting author info
+        convert(self.bookTitle,[0])#getting author info
         with open(self.filename) as f:
             lines = f.readlines()
             print lines
@@ -34,12 +38,13 @@ class Reader:
 
         gaze = ALProxy("ALGazeAnalysis",IP,Port)
         atts = ALProxy("ALAnimatedSpeech",IP,Port)
+        aup = ALProxy("ALAudioPlayer", IP, PORT)
 
         globalSentence = """"""
         count = 0
         globalFace = 9999
         
-        convert("60744-whoop-goes-the-pufferfish.pdf",self.pages)
+        convert(self.bookTitle,self.pages)
         fileName = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
         #fileName = 'c:/Users/Zoe Chai/Desktop/output.txt'
         dictTxt = layout(True, "60744-whoop-goes-the-pufferfish.pdf",self.pages)
@@ -102,7 +107,8 @@ class Reader:
                             dialog.subscribe('myModule')
                             dialog.activateTopic(topics)
                             #dialog.forceOutput()
-                            dialog.gotoTopic("pay attention")
+                            dialog.gotoTopic("ExampleDialog")
+                            #aup.playFile("/home/nao/home/nao/random.wav")
                             """memoryProxy.removeData("Dialog/Answered")
                             memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
 
@@ -115,6 +121,7 @@ class Reader:
                             #dialog.unloadTopic(topic)
                             # Stop dialog
                             dialog.unsubscribe('myModule')
+                            self.tts.say("Let's continue")
                             #memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
                             """self.tts.say("Hey my little friend!")
                             self.tts.say("Can you tell me what just happened in the story?")
@@ -144,6 +151,7 @@ class Reader:
                     self.turnPage = 1
                     #self.tracker.setTimeOut(2000)
                     self.tts.say("Let's look at this picture")
+                    time.sleep(2)
                     armMotion.point(location)
                     #self.tracker.lookAt(targetPosition,0,0.5,False)
                     
@@ -162,6 +170,7 @@ class Reader:
                     #self.tracker.setTimeOut(2000)
                     armMotion.point(location)
                     self.tts.say("Let's look at this sentence")
+                    time.sleep(2)
                 self.tracker.lookAt(targetPosition,0,0.5,False)
                 
                 time.sleep(0.5)
@@ -173,5 +182,6 @@ class Reader:
                 #tts.setParameter("speed", 50)
                 atts.say(output.lower(),{"bodyLanguageMode":"random"})
         gaze.unsubscribe("ALGazeAnalysis")
+        memoryProxy.subscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",self.IP)
     
     
