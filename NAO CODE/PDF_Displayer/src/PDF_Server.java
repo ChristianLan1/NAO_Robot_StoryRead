@@ -123,7 +123,7 @@ public class PDF_Server{
 		mainframe.getContentPane().setLayout(null);
 		
 		imgLabel = new JLabel("Waiting for the robot to connect......",SwingConstants.CENTER);
-		imgLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
+		imgLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 30));
 		imgLabel.setBounds(mainframe.getBounds());
 		mainframe.getContentPane().add(imgLabel);
 		
@@ -154,6 +154,7 @@ public class PDF_Server{
 				String bookTitle = getBookTitle();
 				
 				imgLabel.setText("Connection established. Preparing the book file......");
+				
 				convert(bookTitle);//parse the pdf file
 				
 				System.out.println("2");//test 2

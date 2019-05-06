@@ -143,9 +143,6 @@ public class MainUI {
 			folder.createNewFile();
 		}
 		File[] fileLists = folder.listFiles();
-		if(fileLists!= null){
-		    
-		}
 		
 
 		MainUI mainWindow = new MainUI();
@@ -157,7 +154,7 @@ public class MainUI {
 		list.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		if(fileLists.length != 0){
 			for (int i = 0; i < fileLists.length; i++) {
-			    if(fileLists[i].isFile()) {
+			    if(fileLists[i].isFile()&&fileLists[i].getName().contains("pdf")) {
 			    	((DefaultListModel)list.getModel()).addElement(fileLists[i].getName().substring(0, fileLists[i].getName().length()-4));
 			    }
 		    }

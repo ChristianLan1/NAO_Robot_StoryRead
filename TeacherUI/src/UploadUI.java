@@ -94,36 +94,41 @@ public class UploadUI<ClientUI> extends JFrame {
 		
 		
 	
-		setSize(300, 350);
+		setSize(518, 499);
 		setLocationRelativeTo(null);
 		uploadPanel = new JPanel();
+		uploadPanel.setBackground(Color.WHITE);
 		uploadPanel.setForeground(new Color(0, 0, 0));
 		setContentPane(uploadPanel);
 		uploadPanel.setLayout(null);
 		
 		
 		JLabel lblBookTitle = new JLabel("Book Title:");
-		lblBookTitle.setBounds(16, 157, 85, 16);
+		lblBookTitle.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblBookTitle.setBounds(16, 150, 91, 35);
 		uploadPanel.add(lblBookTitle);
 		
 		booknameField = new JTextField();
-		booknameField.setBounds(87, 152, 191, 26);
+		booknameField.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		booknameField.setBounds(105, 150, 347, 35);
 		uploadPanel.add(booknameField);
 		booknameField.setColumns(10);
 		
 		
 		JButton btnConfirm = new JButton("Confirm");
-		btnConfirm.setBounds(16, 293, 262, 29);
+		btnConfirm.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		btnConfirm.setBounds(122, 395, 262, 35);
 		uploadPanel.add(btnConfirm);
 		
 		JTextPane tipsPane = new JTextPane();
-		tipsPane.setFont(new Font("Times", Font.PLAIN, 13));
+		tipsPane.setFont(new Font("Dialog", Font.PLAIN, 18));
 		tipsPane.setForeground(Color.RED);
-		tipsPane.setBounds(16, 224, 262, 65);
+		tipsPane.setBounds(16, 201, 441, 132);
 		uploadPanel.add(tipsPane);
 		
 		//set the upload button
 		JButton btnuploadfile = new JButton("Choose file...");
+		btnuploadfile.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		btnuploadfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("is this run?");
@@ -189,7 +194,7 @@ public class UploadUI<ClientUI> extends JFrame {
 			      }
 			}
 		});
-		btnuploadfile.setBounds(6, 29, 155, 29);
+		btnuploadfile.setBounds(6, 29, 475, 41);
 		uploadPanel.add(btnuploadfile);
 		
 		}
