@@ -63,6 +63,8 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 	private JTextField beginNum;
 	private JTextField endNum;
 	private MainUI mainframe;
+	private String pathChai = "C:\\Users\\Zoe Chai\\Desktop\\books";
+    private String pathLan = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";
 	
 	/**
 	 * Launch the application.
@@ -73,7 +75,7 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 	 * Create the frame.
 	 */
 	
-	//关闭窗口时弹窗
+	
 	public ChoosePageUI() {
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -84,47 +86,55 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 			}
 		});
 		
-		setSize(300, 450);
+		setSize(513, 658);
 		setLocationRelativeTo(null);
 		uploadPanel = new JPanel();
+		uploadPanel.setBackground(Color.WHITE);
 		uploadPanel.setForeground(new Color(0, 0, 0));
 		setContentPane(uploadPanel);
 		uploadPanel.setLayout(null);
 		
 		
 		JLabel lblBookTitle = new JLabel("");
-		lblBookTitle.setBounds(16, 18, 262, 26);
+		lblBookTitle.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblBookTitle.setBackground(Color.WHITE);
+		lblBookTitle.setBounds(16, 18, 460, 38);
 		uploadPanel.add(lblBookTitle);
 		lblBookTitle.setText(mainframe.list.getSelectedValue());
 		
 		JTextPane txtpnChoosePages = new JTextPane();
+		txtpnChoosePages.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		txtpnChoosePages.setText("Choose the pages that you want the robot to read:");
-		txtpnChoosePages.setBounds(16, 83, 278, 38);
+		txtpnChoosePages.setBounds(16, 142, 340, 82);
 		uploadPanel.add(txtpnChoosePages);
 		
 		JLabel lblFrom = new JLabel("From");
-		lblFrom.setBounds(16, 133, 43, 16);
+		lblFrom.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblFrom.setBounds(15, 240, 52, 31);
 		uploadPanel.add(lblFrom);
 		
 		beginNum = new JTextField();
-		beginNum.setBounds(48, 128, 52, 26);
+		beginNum.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		beginNum.setBounds(69, 243, 52, 26);
 		uploadPanel.add(beginNum);
 		beginNum.setColumns(10);
 		
 		JLabel To = new JLabel(" -");
-		To.setBounds(96, 133, 18, 16);
+		To.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		To.setBounds(121, 248, 18, 16);
 		uploadPanel.add(To);
 		
 		endNum = new JTextField();
-		endNum.setBounds(106, 128, 53, 26);
+		endNum.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		endNum.setBounds(154, 243, 53, 26);
 		uploadPanel.add(endNum);
 		endNum.setColumns(10);
 		
 		JTextPane Note = new JTextPane();
 		Note.setForeground(Color.GRAY);
-		Note.setFont(new Font("Times", Font.PLAIN, 13));
+		Note.setFont(new Font("Dialog", Font.PLAIN, 18));
 		Note.setText(" NOTE : \n * The pages are counted from 0. Usually the  first page (page 0) is the book cover. \n * You'd better choose the pages from the  beginning of the story.");
-		Note.setBounds(16, 180, 262, 79);
+		Note.setBounds(16, 287, 441, 141);
 		Note.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		uploadPanel.add(Note);
 		
@@ -135,12 +145,13 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 		uploadPanel.add(tipsPane);
 		
 		JTextPane Tips = new JTextPane();
-		Tips.setFont(new Font("Times", Font.PLAIN, 13));
+		Tips.setFont(new Font("Dialog", Font.PLAIN, 18));
 		Tips.setForeground(Color.RED);
-		Tips.setBounds(16, 300, 262, 50);
+		Tips.setBounds(16, 444, 441, 88);
 		uploadPanel.add(Tips);
 		
 		JButton btnConfirm = new JButton("Confirm");
+		btnConfirm.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		btnConfirm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String begin = beginNum.getText().trim();
@@ -158,7 +169,7 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 					
 					PrintWriter writer;
 					try {
-						File pageText = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/books/book_pages.txt");
+						File pageText = new File(pathChai +"\\book_pages.txt");
 						if(pageText.exists()==false){
 							pageText.createNewFile();
 						}
@@ -180,7 +191,7 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 				}
 			}
 		});
-		btnConfirm.setBounds(89, 393, 117, 29);
+		btnConfirm.setBounds(177, 548, 141, 38);
 		uploadPanel.add(btnConfirm);
 		
 		

@@ -63,13 +63,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
-import com.sun.pdfview.PDFFile;
-import com.sun.pdfview.PDFPage;
 
 public class UploadUI<ClientUI> extends JFrame {
 	private JPanel uploadPanel;
 	private JTextField booknameField;
     private MainUI mainframe;
+    private String pathChai = "C:\\Users\\Zoe Chai\\Desktop\\books";
+    private String pathLan = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";
     public static String bookTitle = "test";
 	/**
 	 * Launch the application.
@@ -80,7 +80,7 @@ public class UploadUI<ClientUI> extends JFrame {
 	 * Create the frame.
 	 */
 	
-	//关闭窗口时弹窗
+
 	public UploadUI() {
 		System.out.println("test");
 		addWindowListener(new WindowAdapter() {
@@ -143,7 +143,7 @@ public class UploadUI<ClientUI> extends JFrame {
 			    				public void actionPerformed(ActionEvent e) {
 			    					//copy the file to the the dictionary with the python files
 			    					File bookfile = c.getSelectedFile();
-			    					File copyfile = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/books/"+fileName);//test path
+			    					File copyfile = new File(pathChai + "\\" +fileName);//test path
 			    					
 			    						if(copyfile.exists()){
 			    							System.out.println("what's wrong");

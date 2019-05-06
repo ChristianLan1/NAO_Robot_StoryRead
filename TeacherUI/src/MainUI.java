@@ -73,6 +73,9 @@ public class MainUI {
 	public static List<String> bookList = new ArrayList<>();
 	public static JList<String> list = new JList<String>(new DefaultListModel<String>());
 	public static File bookText;
+	private JButton btnNewButton;
+	private JLabel lblNewLabel;
+	
 	
 	
 
@@ -90,13 +93,13 @@ public class MainUI {
 		mainframe = new JFrame();
 		mainframe.getContentPane().setBackground(Color.WHITE);
 		mainframe.getContentPane().setFont(new Font("Cooper Black", Font.BOLD, 19));
-		mainframe.setSize(550, 400);
+		mainframe.setSize(766, 573);
 		mainframe.setLocationRelativeTo(null);
 		mainframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainframe.getContentPane().setLayout(null);
 		
 		searchField = new JTextField();
-		searchField.setBounds(37, 6, 408, 26);
+		searchField.setBounds(37, 16, 545, 37);
 		mainframe.getContentPane().add(searchField);
 		searchField.setColumns(10);
 		
@@ -104,32 +107,37 @@ public class MainUI {
 		
 		//close the main window and open the upload window when clicking "upload my books"
 		JButton btnChooseYourBooks = new JButton("Upload my books");
+		btnChooseYourBooks.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		btnChooseYourBooks.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				uploadframe = new UploadUI();
 				uploadframe.setVisible(true);
 			}
 		});
-		btnChooseYourBooks.setBounds(329, 37, 169, 29);
+		btnChooseYourBooks.setBounds(526, 60, 188, 37);
 		mainframe.getContentPane().add(btnChooseYourBooks);
 		
-		JLabel lblNewLabel_1 = new JLabel("Choose a book");
-		lblNewLabel_1.setBounds(37, 42, 109, 16);
+		JLabel lblNewLabel_1 = new JLabel("Choose a book...");
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblNewLabel_1.setBounds(37, 63, 138, 37);
 		mainframe.getContentPane().add(lblNewLabel_1);
 		
+		
+		
+		
+		
+		
+		
+		
 	
 		
-		
-		
-		JLabel totalFrame = new JLabel("");
-		totalFrame.setBounds(37, 44, 476, 297);
-		mainframe.getContentPane().add(totalFrame);
-	
 		
 	}
 	public static void main(String[] args) throws IOException {
-		
-		File folder = new File("C:/Users/Christian Lan/OneDrive/NAO CODE/books");
+		String pathChai = "C:\\Users\\Zoe Chai\\Desktop\\books";
+	    String pathLan = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";
+	    
+	    File folder = new File(pathChai);
 		folder.mkdir();
 		if(folder.exists()==false){
 			folder.createNewFile();
@@ -143,7 +151,8 @@ public class MainUI {
 		MainUI mainWindow = new MainUI();
 		mainWindow.mainframe.setVisible(true);
 		
-		list.setBounds(37, 71, 461, 243);
+		list.setBounds(37, 101, 677, 359);
+		list.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		mainWindow.mainframe.getContentPane().add(list);
 		list.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		if(fileLists.length != 0){
@@ -168,12 +177,14 @@ public class MainUI {
 				
 			}
 		});
-		btnComfirm.setBounds(381, 312, 117, 29);
+		btnComfirm.setBounds(561, 464, 153, 37);
+		btnComfirm.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		mainWindow.mainframe.getContentPane().add(btnComfirm);
 		
 		//search the files by typing in the key words
 		JButton btnSearch = new JButton("Search");
-		btnSearch.setBounds(442, 6, 80, 29);
+		btnSearch.setBounds(586, 16, 128, 33);
+		btnSearch.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		mainWindow.mainframe.getContentPane().add(btnSearch);
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

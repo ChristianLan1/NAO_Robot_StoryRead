@@ -39,14 +39,15 @@ class ArmMotion:
                 if touchOrNot == 1.0:
                     #hold pen completed
                     self.memory.unsubscribeToEvent("MiddleTactilTouched","ReactToTouch")
-                    self.postureProxy.goToPosture("Crouch",1.0)
+                    self.postureProxy.goToPosture("Crouch",0.5)
                     break
                 else:
                     time.sleep(1)
         #time.sleep(1.0)
         self.motionProxy.closeHand('LHand')
+        time.sleep(1.0)
 
-        self.postureProxy.goToPosture("Crouch",1.0)
+        self.postureProxy.goToPosture("Crouch",0.5)
 
 
     def point(self,location):
@@ -75,13 +76,13 @@ class ArmMotion:
                 if touchOrNot == 1.0:
                     #colibration completed
                     self.memory.unsubscribeToEvent("MiddleTactilTouched","ReactToTouch")
-                    self.postureProxy.goToPosture("Crouch",1.0)
+                    self.postureProxy.goToPosture("Crouch",0.5)
                     break
                 else:
                     time.sleep(1)
             
         elif location == "righttop":
-            #self.postureProxy.goToPosture("Crouch",1.0)
+            self.postureProxy.goToPosture("Crouch",1.0)
             #Right top
             names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
             angleLists = [-1.0*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 25.0*almath.TO_RAD,65.0*almath.TO_RAD,
@@ -95,7 +96,7 @@ class ArmMotion:
         
 
         elif location == "leftbottom":
-            #self.postureProxy.goToPosture("Crouch",1.0)
+            self.postureProxy.goToPosture("Crouch",1.0)
             #Left bottom
             names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
             angleLists = [-30*almath.TO_RAD,-70.5*almath.TO_RAD, 104.5*almath.TO_RAD, 35.0*almath.TO_RAD,90.0*almath.TO_RAD,
@@ -106,7 +107,7 @@ class ArmMotion:
             time.sleep(1.5)
             #self.postureProxy.goToPosture("Crouch",1.0)
         elif location == "middle":
-            #self.postureProxy.goToPosture("Crouch",1.0)
+            self.postureProxy.goToPosture("Crouch",1.0)
             #Middle-calibration
             names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
             angleLists = [-10.5*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 5.0*almath.TO_RAD,80.0*almath.TO_RAD,
@@ -119,7 +120,7 @@ class ArmMotion:
 
             
         else:
-            #self.postureProxy.goToPosture("Crouch",1.0)
+            self.postureProxy.goToPosture("Crouch",1.0)
             #Left top
             names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
             angleLists = [-88.5*almath.TO_RAD,-15*almath.TO_RAD, 90*almath.TO_RAD, 76.0*almath.TO_RAD,80*almath.TO_RAD,
@@ -128,7 +129,7 @@ class ArmMotion:
             isAbsolute = True
             self.motionProxy.post.angleInterpolation(names, angleLists, times, isAbsolute)
             time.sleep(1.5)
-            #self.postureProxy.goToPosture("Crouch",1.0)
+            self.postureProxy.goToPosture("Crouch",1.0)
 
        
 

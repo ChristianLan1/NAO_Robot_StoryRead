@@ -36,21 +36,21 @@ class Reader:
     
     def readContent(self,memoryProxy,asr,armMotion,dialog,topic):
 
-        gaze = ALProxy("ALGazeAnalysis",IP,Port)
-        atts = ALProxy("ALAnimatedSpeech",IP,Port)
-        aup = ALProxy("ALAudioPlayer", IP, PORT)
+        gaze = ALProxy("ALGazeAnalysis",self.IP,9559)
+        atts = ALProxy("ALAnimatedSpeech",self.IP,9559)
+        aup = ALProxy("ALAudioPlayer", self.IP, 9559)
 
         globalSentence = """"""
         count = 0
         globalFace = 9999
         
         convert(self.bookTitle,self.pages)
-        fileName = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
+        #fileName = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
         #fileName = 'c:/Users/Zoe Chai/Desktop/output.txt'
-        dictTxt = layout(True, "60744-whoop-goes-the-pufferfish.pdf",self.pages)
-        dictImg = layout(False, "60744-whoop-goes-the-pufferfish.pdf",self.pages)
+        dictTxt = layout(True, self.bookTitle,self.pages)
+        dictImg = layout(False, self.bookTitle,self.pages)
 
-        with open(fileName ) as f:
+        with open(self.filename ) as f:
             lines = f.readlines()
             for line in lines:
                 #re.sub("^ [0-9]\/[0-9][0-9]"," ",line)
@@ -105,7 +105,7 @@ class Reader:
                         if visualData != 1:
                             #add dialog here
                             dialog.subscribe('myModule')
-                            dialog.activateTopic(topics)
+                            dialog.activateTopic(topic)
                             #dialog.forceOutput()
                             dialog.gotoTopic("ExampleDialog")
                             #aup.playFile("/home/nao/home/nao/random.wav")
