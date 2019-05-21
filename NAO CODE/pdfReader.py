@@ -14,9 +14,14 @@ locationImg = []
 locationTxt = []
 def convert(fname,pages=None):
     
+    
     if not pages:
         pagenums = set()
     else:
+        if pages == [0]:
+            outputName = "outputAuthor.txt"
+        else:
+            outputName = "outputContent.txt"
         pagenums = set(pages)
 
     output = StringIO()
@@ -34,7 +39,7 @@ def convert(fname,pages=None):
     #print text 
 
     # write Content to .txt
-    text_file = open(os.path.join(sys.path[0],"output.txt"), "w")
+    text_file = open(os.path.join(sys.path[0],outputName), "w")
     text = re.sub("\s\s+", " ", text)
     text_file.write("%s" % text)
     text_file.close()

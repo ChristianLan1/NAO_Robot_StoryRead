@@ -4,17 +4,14 @@ import argparse
 from naoqi import ALProxy
 
 class ArmMotion:
-    def __init__(self,motionProxy,memoryProxy,postureProxy):
+    def __init__(self,motionProxy,memoryProxy,postureProxy,tts):
         self.motionProxy = motionProxy
         self.memory = memoryProxy
         self.postureProxy = postureProxy
+        self.tts = tts
 
     
-        #Set the LHand 
-        self.motionProxy.setStiffnesses("LWristYaw", 1.0)
-        self.motionProxy.setStiffnesses("LShoulderRoll", 1.0)
-        self.motionProxy.setStiffnesses("LElbowYaw", 1.0)
-        self.motionProxy.setStiffnesses("LElbowRoll", 1.0)
+        
 
 
         #hold pen
@@ -23,8 +20,38 @@ class ArmMotion:
                     30.0*almath.TO_RAD, -10.0*almath.TO_RAD]
         self.times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
         self.isAbsolute = True
+    def setupCalibration(self):
+        #initializePosture
+        self.motionProxy.rest()
+        #self.postureProxy.goToPosture("Crouch",0.5)
+
+        #InitializeMotion
+        #self.motion.wakeUp()
+        #time.sleep(10)
+        self.motionProxy.stiffnessInterpolation("Head", 1.0, 1.0)
+        #Initialize armMotion instance
+        #armMotion = arm.ArmMotion(self.motion,memoryProxy,self.postureProxy)
+        self.tts.say("please put a pen for me")
+        
+        self.holdPen()
+        
+        
+        
+        #Calibrate the hand
+        self.tts.say("Calibration")
+        self.tts.say("Please place the center of the tablet to where I'm pointing at")
+        self.tts.say("Please touch my head when calibration finished")
+        self.point("calibration")
+        
+        self.tts.say("Calibration finished.")
+        
         
     def holdPen(self):
+        #Set the LHand 
+        self.motionProxy.setStiffnesses("LWristYaw", 1.0)
+        self.motionProxy.setStiffnesses("LShoulderRoll", 1.0)
+        self.motionProxy.setStiffnesses("LElbowYaw", 1.0)
+        self.motionProxy.setStiffnesses("LElbowRoll", 1.0)
         self.motionProxy.angleInterpolation(self.names, self.angleLists, self.times, self.isAbsolute)
         self.motionProxy.openHand('LHand')
         #say "put a pen in my hand"
@@ -76,7 +103,7 @@ class ArmMotion:
                 if touchOrNot == 1.0:
                     #colibration completed
                     self.memory.unsubscribeToEvent("MiddleTactilTouched","ReactToTouch")
-                    self.postureProxy.goToPosture("Crouch",0.5)
+                    self.postureProxy.goToPosture("Crouch",1.0)
                     break
                 else:
                     time.sleep(1)

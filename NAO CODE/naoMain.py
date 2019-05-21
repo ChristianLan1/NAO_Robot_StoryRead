@@ -15,8 +15,10 @@ IP = "172.20.10.14"
 Port = 9559
 bookInfo = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\\book_pages.txt'
 bookInfoZoe = 'C:\Users\Zoe Chai\Desktop\\books\\book_pages.txt'
-convertedFile = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\output.txt'
-convertedFileZoe = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/output.txt'
+authorL = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\outputAuthor.txt'
+contentL = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\outputContent.txt'
+authorZ = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/outputAuthor.txt'
+contentZ = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/outputContent.txt'
 
 dialogFile = "/home/nao/home/nao/qitopics_enu.top"
 dialogFile_Begin = "/home/nao/home/nao/begin_enu.top"
@@ -88,6 +90,7 @@ def pdfConnection(tts,connectionToPdf):
                 # Stop dialog
                 dialog.unsubscribe('myModule1')
                 #memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
+    dialog.unsubscribe('myModule1')
         
 
 
@@ -162,15 +165,24 @@ def trackChild(tracker,faceProxy,peopleProxy):
 
     
 def dialogSetup(topics,is_Topic):
+    print "debug standup0"
+    time.sleep(10)
     dialog.subscribe('myModule1')
+    print "debug standup0.5"
+    time.sleep(5)
     dialog.activateTopic(topics)
     #dialog.forceOutput()
+    #This is where it stand up!
+    print "debug standup1"
+    time.sleep(10)
     if is_Topic:
-
+        print "debug standup1.5"
+        time.sleep(10)
         dialog.gotoTopic("begin")
     memoryProxy.removeData("Dialog/Answered")
     memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
-
+    print "debug standup2"
+    time.sleep(10)
     dialogOutput = memoryProxy.getData("Dialog/Answered")
     while(dialogOutput == None):
         time.sleep(1)
@@ -185,7 +197,7 @@ def dialogSetup(topics,is_Topic):
     return dialogOutput
 
 def getBookInfo():
-    with open(bookInfoZoe) as f:
+    with open(bookInfo) as f:
         lines = f.readlines()
         #print lines
         book = []
@@ -227,6 +239,7 @@ if __name__ == "__main__":
     tracker = ALProxy("ALTracker", IP, Port)
     faceProxy = ALProxy("ALFaceDetection", IP, Port)
     #voice = Sound.SoundFeedback(asr,memoryProxy,IP)
+    
     peopleProxy = ALProxy("ALPeoplePerception",IP,Port)
     #Initilize Dialog
     dialog = ALProxy('ALDialog', IP, Port)
@@ -238,26 +251,37 @@ if __name__ == "__main__":
 
     #Getting book Info
     book = getBookInfo()
-
+    #Parse Book by author and content
+    convert(book[0],[0])
+    convert(book[0],book[1])
+    #memoryProxy.unsubscribeToEvent('ALSpeechRecognition/IsRunning',IP,IP)
+    
     #Setup Connection to PDF
     connectionToPdf = PDF_Client.client()
     pdfConnection(tts,connectionToPdf)
+    readInstance = Reader.Reader(book[0],tts,tracker,connectionToPdf,IP,book)
     tts.say("Connection successful")
     tts.say("Now, initializing calibration")
     
-    #Setup Calibration
-    armMotion = arm.ArmMotion(motion,memoryProxy,postureProxy)
-    time.sleep(5)
-    print "testing jump"
-    calibrationInstance = calibration.Calibrations(motion,postureProxy,tts,IP,Port,armMotion)
-    calibrationInstance.setupCalibration(memoryProxy)
-    print "ready for reading"
+    #DataListName = memoryProxy.getEventList()
+    #print DataListName
+    #EventList = memoryProxy.getEventList()
+    #print EventList
     
-    #Setup dialog to ask user if start to read
+    #Setup Calibration
+    armMotion = arm.ArmMotion(motion,memoryProxy,postureProxy,tts)
+    #time.sleep(5)
+    print "testing jump"
+    #time.sleep(5)
+    armMotion.setupCalibration()
+    print "ready for reading"
+    time.sleep(10)
+    #Setup dialog to ask user if start to read"""
     dialogOutput = dialogSetup(topic2,True)
     print "second dialog debug", dialogOutput
     while(True):
         print "checking loop"
+        
         #If starts with alright, starting to read
         if dialogOutput.startswith("Alright"):
             print "alright debug"
@@ -269,7 +293,7 @@ if __name__ == "__main__":
             print "initilizing tracker"
             trackChild(tracker,faceProxy,peopleProxy)
             print "begin read author"
-            readInstance = Reader.Reader(convertedFileZoe,tts,tracker,connectionToPdf,IP,book)
+            
             readInstance.readAuthor()
             dialogOutput = dialogSetup(topic,False)
          
@@ -284,11 +308,11 @@ if __name__ == "__main__":
 
 
     
-    """tts.say("Now I'm propertly setup.")
-    tts.say("Do you want to begin now?")
+    #tts.say("Now I'm propertly setup.")
+    #tts.say("Do you want to begin now?")
     
     
-    data = voice.getVoiceRec()
+    """data = voice.getVoiceRec()
     if not data[0] == "no":
         tts.say("Alright, we are ready to go!")
         #Setup Face Tracker
@@ -323,7 +347,7 @@ if __name__ == "__main__":
     connectionToPdf.turnPage()
     readInstance.readContent(memoryProxy,asr,armMotion,dialog,topic)
 
-
+    
     
     tracker.stopTracker()
     tracker.unregisterAllTargets()

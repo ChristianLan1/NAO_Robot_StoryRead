@@ -77,6 +77,7 @@ public class PDF_Server{
 	private JFrame mainframe;
 	private JLabel imgLabel;
 	private String pathChai = "C:\\Users\\Zoe Chai\\Desktop";
+	
 	private String pathLan = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE";
 	public static List<String> bookList = new ArrayList<>();
 	public static JList<String> list = new JList<String>(new DefaultListModel<String>());
@@ -89,7 +90,7 @@ public class PDF_Server{
 	public static void main(String[] args) throws IOException {
 		
 		PDF_Server server= new PDF_Server();
-		
+		server.startNao();
 		server.mainframe.setVisible(true);
 		server.start();
 		
@@ -162,7 +163,7 @@ public class PDF_Server{
 				
 				//set the book cover as the first page
 				imgLabel.setText("");
-				Image pageImg = new ImageIcon(pathChai + "\\imgs\\0.png").getImage();
+				Image pageImg = new ImageIcon(pathLan + "\\imgs\\0.png").getImage();
 				Image scaledImage = pageImg.getScaledInstance(imgLabel.getWidth(),imgLabel.getHeight(),Image.SCALE_SMOOTH);
 				ImageIcon icon = new ImageIcon(scaledImage);
 				imgLabel.setIcon(icon);
@@ -243,16 +244,26 @@ public class PDF_Server{
 			}
 		}
 	}
+private void startNao() {
+	String path="C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\";
+	String py="naoMain";
+	try {
+		Runtime.getRuntime().exec("python "+path + py + ".py");
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
 	
 //read the book_pages.txt file to get the pages
 private String[] getBookPages() throws IOException{
 	String[] pages = null;
-	File book_pages = new File(pathChai + "\\books\\book_pages.txt");
+	File book_pages = new File(pathLan + "\\books\\book_pages.txt");
 	if(!book_pages.exists()){
 		System.out.println("There is no chosen book.");
 	}else{
         String lines = null;
-        FileReader fileReader = new FileReader(pathChai + "\\books\\book_pages.txt");
+        FileReader fileReader = new FileReader(pathLan + "\\books\\book_pages.txt");
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         int count = 0;
         while((lines=bufferedReader.readLine()) != null) {
@@ -275,12 +286,12 @@ private String[] getBookPages() throws IOException{
 //read the book_pages.txt file to get the books
 private String getBookTitle() throws IOException{
 		String bookTitle = null;
-		File book_pages = new File(pathChai + "\\books\\book_pages.txt");
+		File book_pages = new File(pathLan + "\\books\\book_pages.txt");
 		if(!book_pages.exists()){
 			System.out.println("There is no chosen book.");
 		}else{
           String line = null;
-          FileReader fileReader = new FileReader(pathChai + "\\books\\book_pages.txt");
+          FileReader fileReader = new FileReader(pathLan + "\\books\\book_pages.txt");
           BufferedReader bufferedReader = new BufferedReader(fileReader);
           int count = 0;
           while((line=bufferedReader.readLine()) != null) {
@@ -300,7 +311,7 @@ private String getBookTitle() throws IOException{
 private void convert(String bookTitle){
 		try {
 			
-			File pdfFile = new File(pathChai + "\\books\\"+ bookTitle);
+			File pdfFile = new File(pathLan + "\\books\\"+ bookTitle);
 			if(!pdfFile.exists()){
 				System.out.println("Book not found.");
 			}else{
@@ -308,7 +319,7 @@ private void convert(String bookTitle){
 				List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
 				int page = 0;
 				
-				File folder = new File(pathChai + "\\imgs");
+				File folder = new File(pathLan + "\\imgs");
 				folder.mkdir();
 				if(folder.exists()==false){
 					folder.createNewFile();
@@ -318,7 +329,7 @@ private void convert(String bookTitle){
 				{ 
 				    
 				    BufferedImage bim = pdPage.convertToImage(BufferedImage.TYPE_INT_RGB, 300);
-				    ImageIOUtil.writeImage(bim,"png", pathChai + "\\imgs\\" + page,BufferedImage.TYPE_INT_RGB, 300);
+				    ImageIOUtil.writeImage(bim,"png", pathLan + "\\imgs\\" + page,BufferedImage.TYPE_INT_RGB, 300);
 				    ++page;
 				}
 				document.close();
@@ -330,7 +341,7 @@ private void convert(String bookTitle){
 		}
 //set the pane with images
 private void turnPage(int pagenum){
-	Image pageImg = new ImageIcon(pathChai + "\\imgs\\" + pagenum + ".png").getImage();
+	Image pageImg = new ImageIcon(pathLan + "\\imgs\\" + pagenum + ".png").getImage();
 	Image scaledImage = pageImg.getScaledInstance(imgLabel.getWidth(),imgLabel.getHeight(),Image.SCALE_SMOOTH);
 	ImageIcon icon = new ImageIcon(scaledImage);
 	imgLabel.setIcon(icon);

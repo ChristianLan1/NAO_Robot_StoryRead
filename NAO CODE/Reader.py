@@ -9,8 +9,9 @@ import sys, os
 import PDF_Client
 
 class Reader:
-    def __init__(self, filename, tts, tracker,connectionToPdf,IP,book):
-        self.filename = filename
+    def __init__(self, authorFileName, tts, tracker,connectionToPdf,IP,book):
+        self.authorFileName = authorFileName
+        #self.contentFileName = contentFileName
         self.tts = tts
         self.tracker = tracker
         
@@ -21,10 +22,12 @@ class Reader:
         self.book = book
         self.bookTitle = book[0]
         self.pages = book[1]
+        self.dictTxt = layout(True, self.bookTitle,self.pages)
+        self.dictImg = layout(False, self.bookTitle,self.pages)
 
     def readAuthor(self):
-        convert(self.bookTitle,[0])#getting author info
-        with open(self.filename) as f:
+        #convert(self.bookTitle,[0],True)#getting author info
+        with open(self.authorFileName) as f:
             lines = f.readlines()
             print lines
             line = lines[0]
@@ -44,13 +47,13 @@ class Reader:
         count = 0
         globalFace = 9999
         
-        convert(self.bookTitle,self.pages)
+        #convert(self.bookTitle,self.pages,False)
         #fileName = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
         #fileName = 'c:/Users/Zoe Chai/Desktop/output.txt'
-        dictTxt = layout(True, self.bookTitle,self.pages)
-        dictImg = layout(False, self.bookTitle,self.pages)
+        #dictTxt = layout(True, self.bookTitle,self.pages)
+        #dictImg = layout(False, self.bookTitle,self.pages)
 
-        with open(self.filename ) as f:
+        with open(self.authorFileName) as f:
             lines = f.readlines()
             for line in lines:
                 #re.sub("^ [0-9]\/[0-9][0-9]"," ",line)
@@ -144,10 +147,10 @@ class Reader:
                 
                 if self.countPage == 0 and self.turnPage == 0:
                     pagenum = self.pages[0]
-                    if dictTxt[pagenum] == "rightbottom":
-                        location = dictImg[pagenum]
+                    if self.dictTxt[pagenum] == "rightbottom":
+                        location = self.dictImg[pagenum]
                     else:
-                        location = dictTxt[pagenum]
+                        location = self.dictTxt[pagenum]
                     self.turnPage = 1
                     #self.tracker.setTimeOut(2000)
                     self.tts.say("Let's look at this picture")
@@ -162,10 +165,10 @@ class Reader:
                     #Send a msg to pdf displayer to turn page
                     self.countPage = self.countPage + 1
                     pagenum = self.pages[self.countPage]
-                    if dictTxt[pagenum] == "rightbottom":
-                        location = dictImg[pagenum]
+                    if self.dictTxt[pagenum] == "rightbottom":
+                        location = self.dictImg[pagenum]
                     else:
-                        location = dictTxt[pagenum]
+                        location = self.dictTxt[pagenum]
                     #location = self.locationToPoint(pagenum)
                     #self.tracker.setTimeOut(2000)
                     armMotion.point(location)
