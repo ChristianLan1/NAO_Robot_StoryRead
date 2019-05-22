@@ -245,10 +245,17 @@ public class PDF_Server{
 		}
 	}
 private void startNao() {
-	String path="C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\";
+	String pathLan="\"C:\\Users\\Christian Lan\\OneDrive\\nao_story_read\\NAO CODE\\";
 	String py="naoMain";
+	Runtime rt = Runtime.getRuntime();
 	try {
-		Runtime.getRuntime().exec("python "+path + py + ".py");
+		Process python = rt.exec("python "+pathLan + py + ".py\"");
+		BufferedReader br = new BufferedReader(new InputStreamReader(python.getInputStream())); 
+
+	    String line;
+	    while ((line = br.readLine()) != null) {
+	        System.out.println(line);
+	    }
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
