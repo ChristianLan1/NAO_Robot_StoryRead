@@ -137,7 +137,7 @@ public class MainUI {
 		String pathChai = "C:\\Users\\Zoe Chai\\Desktop\\books";
 	    String pathLan = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";
 	    
-	    File folder = new File(pathChai);
+	    File folder = new File(pathLan);
 		folder.mkdir();
 		if(folder.exists()==false){
 			folder.createNewFile();

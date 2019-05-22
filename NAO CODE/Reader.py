@@ -7,11 +7,16 @@ import io
 # -*- coding: utf-8 -*-
 import sys, os
 import PDF_Client
+sys.path.append('/NAO CODE/books/')
+filePath = os.path.abspath(os.path.dirname(__file__))
+
 
 class Reader:
-    def __init__(self, authorFileName, tts, tracker,connectionToPdf,IP,book):
+    def __init__(self, authorFileName,contentFileName, tts, tracker,connectionToPdf,IP,book):
         self.authorFileName = authorFileName
-        #self.contentFileName = contentFileName
+        #self.authorFileName = os.path.join(filePath,authorFileName)
+
+        self.contentFileName = contentFileName
         self.tts = tts
         self.tracker = tracker
         
@@ -53,7 +58,7 @@ class Reader:
         #dictTxt = layout(True, self.bookTitle,self.pages)
         #dictImg = layout(False, self.bookTitle,self.pages)
 
-        with open(self.authorFileName) as f:
+        with open(self.contentFileName) as f:
             lines = f.readlines()
             for line in lines:
                 #re.sub("^ [0-9]\/[0-9][0-9]"," ",line)

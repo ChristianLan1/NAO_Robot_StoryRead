@@ -77,7 +77,7 @@ def parse_layout(pagesize, layout):
         if isinstance(lt_obj, LTImage):
          
             location_img = getloction(pagesize, lt_obj.bbox)
-            print (lt_obj.__class__.__name__ + ":" + location_img)
+            #print (lt_obj.__class__.__name__ + ":" + location_img)
             locations_image.append(location_img)
             locationImg.append(locations_image[0])
             break
@@ -87,10 +87,10 @@ def parse_layout(pagesize, layout):
             
             if not (text == "([0-9]+)\/([0-9]+)"):
                 location_txt = getloction(pagesize, lt_obj.bbox)           
-                print (lt_obj.__class__.__name__ + ":" + location_txt)
+                #print (lt_obj.__class__.__name__ + ":" + location_txt)
                 locations_text.append(location_txt)
-                print "locationtext:",locations_text
-                print(text)
+                #print "locationtext:",locations_text
+                #print(text)
                 locationTxt.append(locations_text[0])
                 break
                 

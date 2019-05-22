@@ -169,7 +169,7 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 					
 					PrintWriter writer;
 					try {
-						File pageText = new File(pathChai +"\\book_pages.txt");
+						File pageText = new File(pathLan +"\\book_pages.txt");
 						if(pageText.exists()==false){
 							pageText.createNewFile();
 						}

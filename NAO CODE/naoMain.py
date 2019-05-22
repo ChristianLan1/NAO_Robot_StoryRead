@@ -15,8 +15,8 @@ IP = "172.20.10.14"
 Port = 9559
 bookInfo = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\\book_pages.txt'
 bookInfoZoe = 'C:\Users\Zoe Chai\Desktop\\books\\book_pages.txt'
-authorL = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\outputAuthor.txt'
-contentL = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\outputContent.txt'
+authorL = 'C:\Users\Christian Lan\OneDrive\\nao_story_read\NAO CODE\outputAuthor.txt'
+contentL = 'C:\Users\Christian Lan\OneDrive\\nao_story_read\NAO CODE\outputContent.txt'
 authorZ = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/outputAuthor.txt'
 contentZ = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/outputContent.txt'
 
@@ -48,8 +48,8 @@ def pdfConnection(tts,connectionToPdf):
         #dialog.subscribe('myModule')
 
         # Activate dialog
-        dialog.activateTopic(topic)
-        
+        #dialog.activateTopic(topic)
+        #dialog.setFocus(topic)
         memoryProxy.removeData("Dialog/Answered")
         memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
         #time.sleep(5)
@@ -72,7 +72,7 @@ def pdfConnection(tts,connectionToPdf):
                 tts.say("I still can't find the displayer")
                 tts.say("Can you double check the PDF application.")
                 tts.say("Thanks a lot!")
-                dialog.deactivateTopic(topic)
+                #dialog.deactivateTopic(topic)
 
                 #Used at testing phase skip the connection
                 """dialog.unloadTopic(topic)
@@ -82,13 +82,13 @@ def pdfConnection(tts,connectionToPdf):
                 is_Connected = True"""
 
 
-            else:
-                dialog.deactivateTopic(topic)
+            #else:
+                #dialog.deactivateTopic(topic)
 
                 # Unload topic
-                dialog.unloadTopic(topic)
+                #dialog.unloadTopic(topic)
                 # Stop dialog
-                dialog.unsubscribe('myModule1')
+                #dialog.unsubscribe('myModule1')
                 #memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
     dialog.unsubscribe('myModule1')
         
@@ -166,18 +166,20 @@ def trackChild(tracker,faceProxy,peopleProxy):
     
 def dialogSetup(topics,is_Topic):
     print "debug standup0"
-    time.sleep(10)
+    #time.sleep(10)
     dialog.subscribe('myModule1')
     print "debug standup0.5"
-    time.sleep(5)
-    dialog.activateTopic(topics)
+    #time.sleep(5)
+    #dialog.activateTopic(topics)
+    #dialog.setFocus(topics)
     #dialog.forceOutput()
     #This is where it stand up!
     print "debug standup1"
-    time.sleep(10)
+    #time.sleep(10)
     if is_Topic:
         print "debug standup1.5"
-        time.sleep(10)
+        #time.sleep(10)
+        dialog.setFocus(topics)
         dialog.gotoTopic("begin")
     memoryProxy.removeData("Dialog/Answered")
     memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
@@ -248,7 +250,9 @@ if __name__ == "__main__":
     topic = dialog.loadTopic(dialogFile.encode('utf-8'))
     dialogFile_Begin = dialogFile_Begin.decode('utf-8')
     topic2 = dialog.loadTopic(dialogFile_Begin.encode('utf-8'))
-
+    dialog.activateTopic(topic)
+    dialog.activateTopic(topic2)
+    dialog.setAnimatedSpeechConfiguration({"bodyLanguageMode":"random"})
     #Getting book Info
     book = getBookInfo()
     #Parse Book by author and content
@@ -259,7 +263,7 @@ if __name__ == "__main__":
     #Setup Connection to PDF
     connectionToPdf = PDF_Client.client()
     pdfConnection(tts,connectionToPdf)
-    readInstance = Reader.Reader(book[0],tts,tracker,connectionToPdf,IP,book)
+    readInstance = Reader.Reader(authorL,contentL,tts,tracker,connectionToPdf,IP,book)
     tts.say("Connection successful")
     tts.say("Now, initializing calibration")
     
@@ -273,10 +277,11 @@ if __name__ == "__main__":
     #time.sleep(5)
     print "testing jump"
     #time.sleep(5)
-    armMotion.setupCalibration()
+    #armMotion.setupCalibration()
     print "ready for reading"
-    time.sleep(10)
+    #time.sleep(10)
     #Setup dialog to ask user if start to read"""
+    motion.setStiffnesses("LHand",0.0)
     dialogOutput = dialogSetup(topic2,True)
     print "second dialog debug", dialogOutput
     while(True):
