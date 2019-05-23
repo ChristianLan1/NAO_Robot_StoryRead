@@ -29,6 +29,9 @@ class Reader:
         self.pages = book[1]
         self.dictTxt = layout(True, self.bookTitle,self.pages)
         self.dictImg = layout(False, self.bookTitle,self.pages)
+        self.trunPageSpeak = ["Let's look at this sentence",
+                        "We are going to next page, Please look at here!",
+                        "This is the sentence I'm going to read!"]
 
     def readAuthor(self):
         #convert(self.bookTitle,[0],True)#getting author info
@@ -159,8 +162,9 @@ class Reader:
                     self.turnPage = 1
                     #self.tracker.setTimeOut(2000)
                     self.tts.say("Let's look at this picture")
-                    time.sleep(2)
                     armMotion.point(location)
+                    time.sleep(1)
+                    
                     #self.tracker.lookAt(targetPosition,0,0.5,False)
                     
                     
@@ -169,6 +173,7 @@ class Reader:
                     self.connectionToPdf.turnPage()
                     #Send a msg to pdf displayer to turn page
                     self.countPage = self.countPage + 1
+                    #if self.countPage > len(self.pages)
                     pagenum = self.pages[self.countPage]
                     if self.dictTxt[pagenum] == "rightbottom":
                         location = self.dictImg[pagenum]
@@ -177,19 +182,25 @@ class Reader:
                     #location = self.locationToPoint(pagenum)
                     #self.tracker.setTimeOut(2000)
                     armMotion.point(location)
-                    self.tts.say("Let's look at this sentence")
+                    
+                    self.tts.say(self.trunPageSpeak[count%len(self.trunPageSpeak)])
                     time.sleep(2)
                 self.tracker.lookAt(targetPosition,0,0.5,False)
                 
                 time.sleep(0.5)
 
                 output = re.sub("([0-9]+)\/[0-9]+","",sytax)
+            
+                output = re.sub("[!@#$-]","",output)
                 count += 1
                 #if count 
                 print "sytax", output
                 #tts.setParameter("speed", 50)
                 atts.say(output.lower(),{"bodyLanguageMode":"random"})
+        atts.say("Yeah!",{"bodyLanguageMode":"contextual"})
+        tts.say("We finished a book!")
+        atts.say("Hope to see you next time! Bye!",{"bodyLanguageMode":"contextual"})
         gaze.unsubscribe("ALGazeAnalysis")
-        memoryProxy.subscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",self.IP)
+        memoryProxy.unsubscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",self.IP)
     
     

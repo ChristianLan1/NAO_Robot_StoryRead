@@ -181,15 +181,17 @@ def dialogSetup(topics,is_Topic):
         #time.sleep(10)
         dialog.setFocus(topics)
         dialog.gotoTopic("begin")
+    else:
+        dialog.setFocus(topics)
     memoryProxy.removeData("Dialog/Answered")
     memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
     print "debug standup2"
-    time.sleep(10)
+    #time.sleep(10)
     dialogOutput = memoryProxy.getData("Dialog/Answered")
     while(dialogOutput == None):
         time.sleep(1)
         dialogOutput = memoryProxy.getData("Dialog/Answered")
-    dialog.deactivateTopic(topics)
+    #dialog.deactivateTopic(topics)
     # Unload topic
     #dialog.unloadTopic(topic)
     # Stop dialog
@@ -252,7 +254,8 @@ if __name__ == "__main__":
     topic2 = dialog.loadTopic(dialogFile_Begin.encode('utf-8'))
     dialog.activateTopic(topic)
     dialog.activateTopic(topic2)
-    dialog.setAnimatedSpeechConfiguration({"bodyLanguageMode":"random"})
+    dialog.setAnimatedSpeechConfiguration({"bodyLanguageMode":"contextual"})
+    
     #Getting book Info
     book = getBookInfo()
     #Parse Book by author and content
@@ -277,11 +280,11 @@ if __name__ == "__main__":
     #time.sleep(5)
     print "testing jump"
     #time.sleep(5)
-    #armMotion.setupCalibration()
+    armMotion.setupCalibration()
     print "ready for reading"
     #time.sleep(10)
     #Setup dialog to ask user if start to read"""
-    motion.setStiffnesses("LHand",0.0)
+    #motion.setStiffnesses("LHand",0.0)
     dialogOutput = dialogSetup(topic2,True)
     print "second dialog debug", dialogOutput
     while(True):
@@ -309,46 +312,6 @@ if __name__ == "__main__":
             dialogOutput =  dialogSetup(topic2,True)
 
 
-
-
-
-    
-    #tts.say("Now I'm propertly setup.")
-    #tts.say("Do you want to begin now?")
-    
-    
-    """data = voice.getVoiceRec()
-    if not data[0] == "no":
-        tts.say("Alright, we are ready to go!")
-        #Setup Face Tracker
-        trackChild(tracker,faceProxy,peopleProxy)
-    else:
-        tts.say("Ok!")
-        tts.say("Let me know when you are ready")
-        data = voice.waitFeedback()
-        if data:
-            #Setup Reader
-            tts.say("Alright, we are ready to go!")
-            readInstance = Reader.Reader(convertedFile,tts,tracker,connectionToPdf)
-            readInstance.readAuthor()"""
-            
-    
-
-    
-    
-    #time.sleep(1)
-    
-
-    
-    #The robot will stand up at this sytax sometimes. No idea why
-    """data = voice.getVoiceRec()
-    if data[0] == "yes":
-        tts.say("Do you remember what we liked about that story? Here's another book by this author.")
-        tts.say("Let's read this one and see if we like it as well as the other book we read")
-    else:
-        tts.say("OK! Let's read it")"""
-
-    #readInstance = Reader.Reader(convertedFile,tts,tracker,connectionToPdf,IP)
     connectionToPdf.turnPage()
     readInstance.readContent(memoryProxy,asr,armMotion,dialog,topic)
 

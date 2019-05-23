@@ -19,11 +19,12 @@ u:(~done)Ok,Let me check the connection.
 u:(~failed)Oh,sorry to hear that. Please make sure you have opened the pdf displayer application and try again.
 
 #topic2:have you read the books of this author before
-u:(~yes)["Do you remember what we liked about that story? " "Guess you like this author very much!"]Here's another book by this author.Let's read this one and see if we like it as well as the other book we read.
-u:(~no)That's alright.["Let's start to read a brand new story." "I hope you'll love this brand new story."]
+u:(~yes)["Do you remember what we liked about that story? " "Guess you like this author very much!"] Here's another book by this author.Let's read this one and see if we like it as well as the other book we read.
+u:(~no)That's alright. ["Let's start to read a brand new story." "I hope you'll love this brand new story."]
 
 #topic3:pay attention
-proposal:%payAttention["we’re reading a fun story now! The child who is listening to the story is looking at the book." "If you can hear me clap your hands."]
+proposal:%payAttention["we’re reading a fun story now! ^start(animations/Stand/Gestures/Enthusiastic_4)
+ The child who is listening to the story is looking at the book." "If you can hear me clap your hands."]
 
 # Start/Wait animation, Goto.
 # If User expresses a word or a sentence found in the concept "hello",

@@ -73,7 +73,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.util.ImageIOUtil;
 
-public class PDF_Server{
+public class PDF_Server {
 	private JFrame mainframe;
 	private JLabel imgLabel;
 	private String pathChai = "C:\\Users\\Zoe Chai\\Desktop";
@@ -90,13 +90,28 @@ public class PDF_Server{
 	public static void main(String[] args) throws IOException {
 		
 		PDF_Server server= new PDF_Server();
-		server.startNao();
-		server.mainframe.setVisible(true);
-		server.start();
+		Thread thread1 = new Thread() {
+            public void run() {
+            	server.mainframe.setVisible(true);
+        		server.start();
+            }
+        };
+        Thread thread2 = new Thread() {
+            public void run() {
+            	server.startNao();
+            }
+        };
+        thread1.start();       
+        //thread2.start();
+
+        
+
+    }
+		
 		
 		
 
-	}
+	
 
 	public PDF_Server() throws IOException {
 		    System.out.println("initializing the server...");
