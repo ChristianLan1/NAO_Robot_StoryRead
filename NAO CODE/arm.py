@@ -107,7 +107,8 @@ class ArmMotion:
                     break
                 else:
                     time.sleep(1)
-            
+                
+        
         elif location == "righttop":
             self.postureProxy.goToPosture("Crouch",1.0)
             #Right top
@@ -124,14 +125,26 @@ class ArmMotion:
 
         elif location == "leftbottom":
             self.postureProxy.goToPosture("Crouch",1.0)
+            #Raise arm 0
+            names      = ["LShoulderRoll","LShoulderPitch"]
+            angleLists = [76.0*almath.TO_RAD,80*almath.TO_RAD]
+            times      = [1.0, 1.0]
+            isAbsolute = True
+            self.motionProxy.post.angleInterpolation(names, angleLists, times, isAbsolute)
             #Left bottom
             names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
             angleLists = [-30*almath.TO_RAD,-70.5*almath.TO_RAD, 104.5*almath.TO_RAD, 35.0*almath.TO_RAD,90.0*almath.TO_RAD,
                         40*almath.TO_RAD, 29*almath.TO_RAD]
             times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
             isAbsolute = True
-            self.motionProxy.post.angleInterpolation(names, angleLists, times, isAbsolute)
+            self.motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
             time.sleep(1.5)
+            #Raise arm 1
+            names      = ["LElbowRoll","LWristYaw","LShoulderRoll","LShoulderPitch"]
+            angleLists = [-80*almath.TO_RAD,20*almath.TO_RAD,76.0*almath.TO_RAD,80*almath.TO_RAD]
+            times      = [1.0,1.0, 1.0,1.0]
+            isAbsolute = True
+            self.motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
             #self.postureProxy.goToPosture("Crouch",1.0)
         elif location == "middle":
             self.postureProxy.goToPosture("Crouch",1.0)
@@ -148,16 +161,24 @@ class ArmMotion:
             
         else:
             self.postureProxy.goToPosture("Crouch",1.0)
+            #Raise arm 
+            names      = ["LShoulderRoll","LShoulderPitch"]
+            angleLists = [76.0*almath.TO_RAD,80*almath.TO_RAD]
+            times      = [1.0, 1.0]
+            isAbsolute = True
+            self.motionProxy.post.angleInterpolation(names, angleLists, times, isAbsolute)
             #Left top
             names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
             angleLists = [-88.5*almath.TO_RAD,-15*almath.TO_RAD, 90*almath.TO_RAD, 76.0*almath.TO_RAD,80*almath.TO_RAD,
                         40*almath.TO_RAD, 15*almath.TO_RAD]
             times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
             isAbsolute = True
-            self.motionProxy.post.angleInterpolation(names, angleLists, times, isAbsolute)
+            self.motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
             time.sleep(1.5)
+            #Raise arm 1
+            names      = ["LElbowRoll","LWristYaw","LShoulderRoll","LShoulderPitch"]
+            angleLists = [-50*almath.TO_RAD,20*almath.TO_RAD,76.0*almath.TO_RAD,30*almath.TO_RAD]
+            times      = [1.0,1.0,1.0,1.0]
+            isAbsolute = True
+            self.motionProxy.angleInterpolation(names, angleLists, times, isAbsolute)
             self.postureProxy.goToPosture("Crouch",1.0)
-
-       
-
-
