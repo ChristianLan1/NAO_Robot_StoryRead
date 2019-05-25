@@ -68,8 +68,8 @@ public class UploadUI<ClientUI> extends JFrame {
 	private JPanel uploadPanel;
 	private JTextField booknameField;
     private MainUI mainframe;
-    private String pathChai = "C:\\Users\\Zoe Chai\\Desktop\\books";
-    private String pathLan = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";
+    private String path = "C:\\Users\\Zoe Chai\\Desktop\\nao\\nao_story_read\\NAO CODE\\books";//Chai
+//    private String path = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";//Lan
     public static String bookTitle = "test";
 	/**
 	 * Launch the application.
@@ -148,7 +148,7 @@ public class UploadUI<ClientUI> extends JFrame {
 			    				public void actionPerformed(ActionEvent e) {
 			    					//copy the file to the the dictionary with the python files
 			    					File bookfile = c.getSelectedFile();
-			    					File copyfile = new File(pathLan + "\\" +fileName);//test path
+			    					File copyfile = new File(path + "\\" +booknameField.getText());//test path
 			    					
 			    						if(copyfile.exists()){
 			    							System.out.println("what's wrong");
@@ -166,7 +166,7 @@ public class UploadUI<ClientUI> extends JFrame {
 					    					    //add the book tile to the booktitles array
 					    					    System.out.println(mainframe.bookList);
 					    					    bookTitle= getBookTitle(fileName);
-					    					    ((DefaultListModel)mainframe.list.getModel()).addElement(bookTitle);
+					    					    mainframe.listModel.addElement(booknameField.getText());
 					    					    
 					    					    
 			    							    

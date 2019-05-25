@@ -13,12 +13,12 @@ import calibration
 
 IP = "172.20.10.14"
 Port = 9559
-bookInfo = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\\book_pages.txt'
-bookInfoZoe = 'C:\Users\Zoe Chai\Desktop\\books\\book_pages.txt'
-authorL = 'C:\Users\Christian Lan\OneDrive\\nao_story_read\NAO CODE\outputAuthor.txt'
-contentL = 'C:\Users\Christian Lan\OneDrive\\nao_story_read\NAO CODE\outputContent.txt'
-authorZ = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/outputAuthor.txt'
-contentZ = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/outputContent.txt'
+#3bookInfo = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\\book_pages.txt'
+bookInfo = 'C:\Users\Zoe Chai\Desktop\\nao\\nao_story_read\\NAO CODE\\books\\book_pages.txt'
+#authorL = 'C:\Users\Christian Lan\OneDrive\\nao_story_read\NAO CODE\outputAuthor.txt'
+#contentL = 'C:\Users\Christian Lan\OneDrive\\nao_story_read\NAO CODE\outputContent.txt'
+authorL = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/outputAuthor.txt'
+contentL = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/outputContent.txt'
 
 dialogFile = "/home/nao/home/nao/qitopics_enu.top"
 dialogFile_Begin = "/home/nao/home/nao/begin_enu.top"
@@ -254,7 +254,7 @@ if __name__ == "__main__":
     topic2 = dialog.loadTopic(dialogFile_Begin.encode('utf-8'))
     dialog.activateTopic(topic)
     dialog.activateTopic(topic2)
-    dialog.setAnimatedSpeechConfiguration({"bodyLanguageMode":"contextual"})
+    dialog.setAnimatedSpeechConfiguration({"bodyLanguageMode":"disabled"})
     
     #Getting book Info
     book = getBookInfo()

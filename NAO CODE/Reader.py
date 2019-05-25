@@ -173,7 +173,8 @@ class Reader:
                     self.connectionToPdf.turnPage()
                     #Send a msg to pdf displayer to turn page
                     self.countPage = self.countPage + 1
-                    #if self.countPage > len(self.pages)
+                    if self.countPage >= len(self.pages):
+                        break
                     pagenum = self.pages[self.countPage]
                     if self.dictTxt[pagenum] == "rightbottom":
                         location = self.dictImg[pagenum]
@@ -181,9 +182,10 @@ class Reader:
                         location = self.dictTxt[pagenum]
                     #location = self.locationToPoint(pagenum)
                     #self.tracker.setTimeOut(2000)
-                    armMotion.point(location)
+                
                     
                     self.tts.say(self.trunPageSpeak[count%len(self.trunPageSpeak)])
+                    armMotion.point(location)
                     time.sleep(2)
                 self.tracker.lookAt(targetPosition,0,0.5,False)
                 
@@ -198,9 +200,9 @@ class Reader:
                 #tts.setParameter("speed", 50)
                 atts.say(output.lower(),{"bodyLanguageMode":"random"})
         atts.say("Yeah!",{"bodyLanguageMode":"contextual"})
-        tts.say("We finished a book!")
+        self.tts.say("We finished a book!")
         atts.say("Hope to see you next time! Bye!",{"bodyLanguageMode":"contextual"})
         gaze.unsubscribe("ALGazeAnalysis")
-        memoryProxy.unsubscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",self.IP)
+        #memoryProxy.unsubscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",self.IP)
     
     

@@ -52,6 +52,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
@@ -70,11 +72,15 @@ public class MainUI {
 	private JFrame mainframe;
 	private ChoosePageUI choosepageframe;
 	private JTextField searchField;
-	public static List<String> bookList = new ArrayList<>();
-	public static JList<String> list = new JList<String>(new DefaultListModel<String>());
+	public static ArrayList bookList = new ArrayList();
+	public static DefaultListModel listModel = new DefaultListModel<>();
+	public static JList<String> list = new JList();
 	public static File bookText;
 	private JButton btnNewButton;
 	private JLabel lblNewLabel;
+	private static File folder;
+	private static String path = "C:\\Users\\Zoe Chai\\Desktop\\nao\\nao_story_read\\NAO CODE\\books";//Chai
+//  private static String path = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";//Lan
 	
 	
 	
@@ -102,6 +108,7 @@ public class MainUI {
 		searchField.setBounds(37, 16, 545, 37);
 		mainframe.getContentPane().add(searchField);
 		searchField.setColumns(10);
+		searchField.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
 
 		
@@ -124,41 +131,19 @@ public class MainUI {
 		
 		
 		
-		
-		
-		
-		
-		
-	
-		
-		
 	}
 	public static void main(String[] args) throws IOException {
-		String pathChai = "C:\\Users\\Zoe Chai\\Desktop\\books";
-	    String pathLan = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";
 	    
-	    File folder = new File(pathLan);
-		folder.mkdir();
-		if(folder.exists()==false){
-			folder.createNewFile();
-		}
-		File[] fileLists = folder.listFiles();
 		
 
 		MainUI mainWindow = new MainUI();
 		mainWindow.mainframe.setVisible(true);
 		
+		mainWindow.mainframe.getContentPane().add(list);
 		list.setBounds(37, 101, 677, 359);
 		list.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		mainWindow.mainframe.getContentPane().add(list);
 		list.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		if(fileLists.length != 0){
-			for (int i = 0; i < fileLists.length; i++) {
-			    if(fileLists[i].isFile()&&fileLists[i].getName().contains("pdf")) {
-			    	((DefaultListModel)list.getModel()).addElement(fileLists[i].getName().substring(0, fileLists[i].getName().length()-4));
-			    }
-		    }
-		}
+		mainWindow.bindData();
 		
 		
 		JButton btnComfirm = new JButton("Comfirm");
@@ -184,30 +169,57 @@ public class MainUI {
 		btnSearch.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		mainWindow.mainframe.getContentPane().add(btnSearch);
 		btnSearch.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
-				((DefaultListModel)list.getModel()).clear();
-				if(fileLists.length != 0){
-					for (int i = 0; i < fileLists.length; i++) {
-					    if(fileLists[i].isFile()) {
-					    	((DefaultListModel)list.getModel()).addElement(fileLists[i].getName().substring(0, fileLists[i].getName().length()-4));
-					    }
-				    }
-				}
 				String searchText = mainWindow.searchField.getText().trim();
-				int listSize = ((DefaultListModel)list.getModel()).size();	
-				for(int i=0; i<listSize;i++){
-					String listObj = ((DefaultListModel)list.getModel()).getElementAt(i).toString();
-					if(!listObj.contains(searchText)){
-						((DefaultListModel)list.getModel()).remove(i);
-					}
+				try {
+					mainWindow.searchFilter(searchText);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
+
 			}
 		});
 		
 		
-		
-		
 				}
+private ArrayList getTitles() throws IOException {
+	folder = new File(path);
+	folder.mkdir();
+	if(folder.exists()==false){
+		folder.createNewFile();
+	}
+	File[] fileLists = folder.listFiles();
+	ArrayList bookList = new ArrayList();
+	if(fileLists.length != 0){
+		for (int i = 0; i < fileLists.length; i++) {
+		    if(fileLists[i].isFile()&&fileLists[i].getName().contains("pdf")) {
+		    	bookList.add(fileLists[i].getName().substring(0, fileLists[i].getName().length()-4));
+		    }
+		}
+    }
+	return bookList;
+}
+public void bindData() throws IOException {
+	getTitles().stream().forEach((title)->{
+	listModel.addElement(title);
+	});
+	list.setModel(listModel);
+	list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+}
+private void searchFilter(String searchText) throws IOException {
+	DefaultListModel filterModel = new DefaultListModel();
+	ArrayList bookList = getTitles();
+	bookList.stream().forEach((title)->{
+		String titleName = title.toString().toLowerCase();
+		if(titleName.contains(searchText.toLowerCase())){
+			filterModel.addElement(title);
+		}
+	});
+	listModel=filterModel;
+	list.setModel(listModel);
+}
 }
 
 

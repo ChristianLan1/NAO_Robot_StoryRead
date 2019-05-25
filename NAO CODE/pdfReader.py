@@ -8,7 +8,7 @@ from pdfminer.pdfparser import PDFParser
 from pdfminer.layout import LTTextBox, LTTextLine, LTFigure, LTImage,LTPage
 import re
 import sys, os
-sys.path.append('NAO CODE/books/')
+sys.path.append('/NAO CODE/books/')
 
 locationImg = []
 locationTxt = []
@@ -28,8 +28,8 @@ def convert(fname,pages=None):
     manager = PDFResourceManager()
     converter = TextConverter(manager, output, laparams=LAParams())
     interpreter = PDFPageInterpreter(manager, converter)
-
-    infile = file(os.path.join(sys.path[0],fname), 'rb')
+    #print sys.path
+    infile = file(os.path.join(sys.path[0]+"\\books",fname), 'rb')
     for page in PDFPage.get_pages(infile, pagenums):
         interpreter.process_page(page)
     infile.close()
@@ -109,10 +109,10 @@ def layout(isText, fname, pages=None):
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
 
-    infile = file(os.path.join(sys.path[0],fname), 'rb')
+    infile = file(os.path.join(sys.path[0]+"\\books",fname), 'rb')
     
     #get the page zise
-    parser = PDFParser(open(os.path.join(sys.path[0],fname), 'rb')) 
+    parser = PDFParser(open(os.path.join(sys.path[0]+"\\books",fname), 'rb')) 
     doc = PDFDocument(parser)
     pagelist = []
     for page in PDFPage.create_pages(doc):

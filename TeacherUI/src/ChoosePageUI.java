@@ -63,8 +63,8 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 	private JTextField beginNum;
 	private JTextField endNum;
 	private MainUI mainframe;
-	private String pathChai = "C:\\Users\\Zoe Chai\\Desktop\\books";
-    private String pathLan = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";
+	private String path = "C:\\Users\\Zoe Chai\\Desktop\\nao\\nao_story_read\\NAO CODE\\books";//Chai
+//    private String path = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";//Lan
 	
 	/**
 	 * Launch the application.
@@ -169,12 +169,13 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 					
 					PrintWriter writer;
 					try {
-						File pageText = new File(pathLan +"\\book_pages.txt");
+						File pageText = new File(path +"\\book_pages.txt");
 						if(pageText.exists()==false){
 							pageText.createNewFile();
 						}
 						writer = new PrintWriter(pageText, "UTF-8");
 					    writer.println(mainframe.list.getSelectedValue()+".pdf");
+					    System.out.println(mainframe.list.getSelectedValue());//test
 					    writer.println(pageList);
 				    	writer.close();
 					} catch (FileNotFoundException
