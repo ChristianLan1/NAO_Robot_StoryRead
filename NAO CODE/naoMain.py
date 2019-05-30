@@ -8,12 +8,12 @@ import io
 import sys, os
 import PDF_Client
 import Reader
-import Sound
-import calibration
+
+
 
 IP = "172.20.10.14"
 Port = 9559
-#3bookInfo = 'C:\Users\Christian Lan\OneDrive\NAO CODE\\books\\book_pages.txt'
+#bookInfo = 'C:\Users\Christian Lan\OneDrive\\nao_story_read\NAO CODE\\books\\book_pages.txt'
 bookInfo = 'C:\Users\Zoe Chai\Desktop\\nao\\nao_story_read\\NAO CODE\\books\\book_pages.txt'
 #authorL = 'C:\Users\Christian Lan\OneDrive\\nao_story_read\NAO CODE\outputAuthor.txt'
 #contentL = 'C:\Users\Christian Lan\OneDrive\\nao_story_read\NAO CODE\outputContent.txt'
@@ -23,12 +23,12 @@ contentL = 'C:/Users/Zoe Chai/Desktop/nao/nao_story_read/NAO CODE/outputContent.
 dialogFile = "/home/nao/home/nao/qitopics_enu.top"
 dialogFile_Begin = "/home/nao/home/nao/begin_enu.top"
     
-#dialogFile = os.path.abspath("\home\\nao\qitopics_enu.top")
-
-
-
 
 def pdfConnection(tts,connectionToPdf):
+    """ This function checks if the connection to PDF Displayer application is established.
+        If it is not connected, the robot will Initilize a dialog and wait for response.
+        If the answer from human is in "connected" topic, the program check connection again.
+    """
     
     is_Connected = connectionToPdf.connection()
     if not is_Connected:
@@ -39,73 +39,36 @@ def pdfConnection(tts,connectionToPdf):
     else:
         tts.say("Connected to PDF displayer")
     dialog.subscribe('myModule1')
-    #dialog.activateTopic(topic)
+    
     print "initilized dialog"
     while(not is_Connected):
-        
         time.sleep(0.5)
-        
-        #dialog.subscribe('myModule')
-
-        # Activate dialog
-        #dialog.activateTopic(topic)
-        #dialog.setFocus(topic)
         memoryProxy.removeData("Dialog/Answered")
         memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
-        #time.sleep(5)
-        
         dialogOutput = memoryProxy.getData("Dialog/Answered")
-        print "first dialog debug", dialogOutput
         while(dialogOutput == None):
-            print "no response"
+            #If no response, keep listening
             time.sleep(1)
             dialogOutput = memoryProxy.getData("Dialog/Answered")
-            
-            print dialogOutput
         memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
-        if dialogOutput.startswith("Ok , Let me check the connection"):
-            print "debug"
-            #tts.say("Let me check the connection to PDF Displayer")
+        if dialogOutput.startswith("Ok , Let me check the connection"):            
             is_Connected = connectionToPdf.connection()
-        
             if not is_Connected:
                 tts.say("I still can't find the displayer")
                 tts.say("Can you double check the PDF application.")
                 tts.say("Thanks a lot!")
-                #dialog.deactivateTopic(topic)
 
-                #Used at testing phase skip the connection
-                """dialog.unloadTopic(topic)
-                # Stop dialog
-                dialog.unsubscribe('myModule1')
-                #memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
-                is_Connected = True"""
-
-
-            #else:
-                #dialog.deactivateTopic(topic)
-
-                # Unload topic
-                #dialog.unloadTopic(topic)
-                # Stop dialog
-                #dialog.unsubscribe('myModule1')
-                #memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
     dialog.unsubscribe('myModule1')
-        
-
-
-
-        
-
         
 
        
     
-def trackChild(tracker,faceProxy,peopleProxy):
+def trackChild(tracker,peopleProxy):
+    """This method reads a people ID from memory. Use this ID for tracker.
+        If the target lost, keep reading from memory if the robot sees a people"""
+
     targetName = "People"
-    faceWidth = 0.2
     peopleProxy.setTimeBeforePersonDisappears(10)
-    #peopleProxy.subscribeToEvent("PeoplePerception/PeopleList")
     memoryProxy.removeData("PeoplePerception/PeopleList")
     memoryProxy.subscribeToEvent("PeoplePerception/PeopleList","PeopleTracker",IP)
     tts.say("Hello my friend, please show your face to me if you are ready to read with me")
@@ -116,18 +79,9 @@ def trackChild(tracker,faceProxy,peopleProxy):
 
         print PeopleId
     tracker.registerTarget(targetName, PeopleId)
-    #tracker.registerTarget(targetName, faceWidth)
-    # Then, start tracker.
     tracker.track(targetName)
     print "ALTracker successfully started, now show your face to robot!"
     
-    #faceProxy.clearDatabase()
-    #faceProxy.setTrackingEnabled(True)
-    #faceProxy.subscribe("Child", 600, 0.0 )
-    #tracker.toggleSearch(True)
-    #motion.wakeUp()
-    #motion.stiffnessInterpolation("Head", 1.0, 1.0)
-    #tts.say("If you are ready to read with me, please look at me")
     try:
         while(tracker.isTargetLost()):
             PeopleId = memoryProxy.getData("PeoplePerception/PeopleList")
@@ -138,25 +92,12 @@ def trackChild(tracker,faceProxy,peopleProxy):
 
             print PeopleId
             tracker.registerTarget(targetName, PeopleId)
-            #search = tracker.isSearchEnabled()
-            #print search
-            #if not search:
-            #tracker.toggleSearch(True)
             time.sleep(1)
-            #tracker.toggleSearch(False)
-            #tracker.toggleSearch(False)
             print"looking for target"
             
     except KeyboardInterrupt:
         
         print"Interrupted by user"
-    #faceData = memoryProxy.getData("FaceDetected")
-    #tracker.toggleSearch(False)
-    """faceData = faceProxy.getLearnedFacesList()
-    if len(faceData) == 0:
-        faceProxy.learnFace("Child")
-        time.sleep(8)
-    print faceData"""
     PeopleId = memoryProxy.getData("PeoplePerception/PeopleList")
     memoryProxy.unsubscribeToEvent("PeoplePerception/PeopleList","PeopleTracker")
     print PeopleId
@@ -165,55 +106,41 @@ def trackChild(tracker,faceProxy,peopleProxy):
 
     
 def dialogSetup(topics,is_Topic):
-    print "debug standup0"
-    #time.sleep(10)
+    """This method starts a dialog and make a proposal from topics. 
+        After gets response from people, it returns robot output""" 
     dialog.subscribe('myModule1')
-    print "debug standup0.5"
-    #time.sleep(5)
-    #dialog.activateTopic(topics)
-    #dialog.setFocus(topics)
-    #dialog.forceOutput()
-    #This is where it stand up!
-    print "debug standup1"
-    #time.sleep(10)
     if is_Topic:
-        print "debug standup1.5"
-        #time.sleep(10)
+        #This is used to determine which proposal should be generated from the topics
         dialog.setFocus(topics)
         dialog.gotoTopic("begin")
     else:
         dialog.setFocus(topics)
     memoryProxy.removeData("Dialog/Answered")
     memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
-    print "debug standup2"
-    #time.sleep(10)
     dialogOutput = memoryProxy.getData("Dialog/Answered")
     while(dialogOutput == None):
         time.sleep(1)
         dialogOutput = memoryProxy.getData("Dialog/Answered")
-    #dialog.deactivateTopic(topics)
-    # Unload topic
-    #dialog.unloadTopic(topic)
-    # Stop dialog
     dialog.unsubscribe('myModule1')
     memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
     
     return dialogOutput
 
 def getBookInfo():
+    """This method reads a file which is generated by TeachUI application.
+        This method reads the first line as book title and second line as page numbers.
+        Then storeing them into a list called "book" and returns this value""" 
     with open(bookInfo) as f:
         lines = f.readlines()
-        #print lines
         book = []
         count = 0
         pages = []
         try:
-            for line in lines:
-                
+            for line in lines:   
                 line = line.rstrip()
                 print line
                 if count==1:
-                   
+                   #convert all the numbers from string to int and append to a list
                     line = re.findall("[0-9]+",line)
                     for element in line:
                        pages.append(int(element))
@@ -222,7 +149,6 @@ def getBookInfo():
                 book.append(line)
                 count += 1
             print book
-
         except:
             print "Incorrect file format"
     return book
@@ -233,17 +159,27 @@ def getBookInfo():
 
 
 if __name__ == "__main__":
-    #Initialize Proxy
+    """
+        Define the sequential process for robot
+            1 Initilize necessary proxies for the program
+            2 Parse the book information 
+            3 Building connection to PDF Displayer through socket
+            4 Calibration
+            5 Start tracker
+            6 Start Reading
+        Dialog is usually used to wait for human instructions 
+            that if continue to certain processes
+    
+    """
+
+    #Initialize proxies for this program 
     tts = ALProxy("ALTextToSpeech", IP,Port)
     asr = ALProxy("ALSpeechRecognition", IP, Port)
-    #asr.unsubscribe("WordRecognized")
     memoryProxy = ALProxy("ALMemory", IP, Port)
     motion = ALProxy("ALMotion", IP ,Port)
     postureProxy = ALProxy("ALRobotPosture", IP, Port)
     tracker = ALProxy("ALTracker", IP, Port)
     faceProxy = ALProxy("ALFaceDetection", IP, Port)
-    #voice = Sound.SoundFeedback(asr,memoryProxy,IP)
-    
     peopleProxy = ALProxy("ALPeoplePerception",IP,Port)
     #Initilize Dialog
     dialog = ALProxy('ALDialog', IP, Port)
@@ -261,62 +197,42 @@ if __name__ == "__main__":
     #Parse Book by author and content
     convert(book[0],[0])
     convert(book[0],book[1])
-    #memoryProxy.unsubscribeToEvent('ALSpeechRecognition/IsRunning',IP,IP)
     
     #Setup Connection to PDF
     connectionToPdf = PDF_Client.client()
     pdfConnection(tts,connectionToPdf)
+    #Initilize Read Instance
     readInstance = Reader.Reader(authorL,contentL,tts,tracker,connectionToPdf,IP,book)
     tts.say("Connection successful")
     tts.say("Now, initializing calibration")
-    
-    #DataListName = memoryProxy.getEventList()
-    #print DataListName
-    #EventList = memoryProxy.getEventList()
-    #print EventList
-    
+
     #Setup Calibration
     armMotion = arm.ArmMotion(motion,memoryProxy,postureProxy,tts)
-    #time.sleep(5)
-    print "testing jump"
-    #time.sleep(5)
     armMotion.setupCalibration()
-    print "ready for reading"
-    #time.sleep(10)
-    #Setup dialog to ask user if start to read"""
-    #motion.setStiffnesses("LHand",0.0)
+    
+    #Starts a dialog to ask if the user want to begin reading
     dialogOutput = dialogSetup(topic2,True)
-    print "second dialog debug", dialogOutput
     while(True):
-        print "checking loop"
-        
         #If starts with alright, starting to read
         if dialogOutput.startswith("Alright"):
-            print "alright debug"
-            #dialog.stopPush()
-            #dialog.deactivateTopic(topic)
-            #dialog.unsubscribe('myModule')
-            #memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
-
-            print "initilizing tracker"
-            trackChild(tracker,faceProxy,peopleProxy)
+            #When user wants to begin, starting tracker to tracker user.
+            trackChild(tracker,peopleProxy)
             print "begin read author"
-            
+            #Start reading the author
             readInstance.readAuthor()
             dialogOutput = dialogSetup(topic,False)
-         
             break
         else:
-
             time.sleep(1)
             dialogOutput =  dialogSetup(topic2,True)
 
-
+    #Tell the PDF Displayer to turn to the page that the robot is going to read. 
     connectionToPdf.turnPage()
+    #Start reading content of the storybook
     readInstance.readContent(memoryProxy,asr,armMotion,dialog,topic)
 
     
-    
+    #Stop trakcer and set robot to rest.
     tracker.stopTracker()
     tracker.unregisterAllTargets()
     motion.rest()

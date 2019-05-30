@@ -12,6 +12,10 @@ filePath = os.path.abspath(os.path.dirname(__file__))
 
 
 class Reader:
+    """
+        This class has two functions. One is to read author of the book, and 
+        the other one is to read content
+    """
     def __init__(self, authorFileName,contentFileName, tts, tracker,connectionToPdf,IP,book):
         self.authorFileName = authorFileName
         #self.authorFileName = os.path.join(filePath,authorFileName)
@@ -24,6 +28,7 @@ class Reader:
         self.turnPage = 0
         self.connectionToPdf = connectionToPdf
         self.IP = IP
+        self.PORT = 9559
         self.book = book
         self.bookTitle = book[0]
         self.pages = book[1]
@@ -34,7 +39,10 @@ class Reader:
                         "This is the sentence I'm going to read!"]
 
     def readAuthor(self):
-        #convert(self.bookTitle,[0],True)#getting author info
+        """ 
+        This method reads title and author of the book. No matter what page that teacher chose,
+        the program always read author for readers.
+        """
         with open(self.authorFileName) as f:
             lines = f.readlines()
             print lines
@@ -46,113 +54,78 @@ class Reader:
         self.tts.say(" Remember if we read from this author before? ")
     
     def readContent(self,memoryProxy,asr,armMotion,dialog,topic):
+        """
+        This method reads content for readers by these steps:
+            1 Process the script to get sentence that the robot going to read
+            2 Locate chidlren's postion and track
+            3 Checking if analyze children's attention by memory key
+            4 If children is not focused, initlize dialog
+            5 If current sentence is page number, do two things:
+                5.1 Send turnpage command to PDF Displayer 
+                5.2 Point to the sentence/image the robot going to read.
+            6 Read the sentence
+        """
 
-        gaze = ALProxy("ALGazeAnalysis",self.IP,9559)
-        atts = ALProxy("ALAnimatedSpeech",self.IP,9559)
-        aup = ALProxy("ALAudioPlayer", self.IP, 9559)
+        gaze = ALProxy("ALGazeAnalysis",self.IP,self.PORT)
+        atts = ALProxy("ALAnimatedSpeech",self.IP,self.PORT)
+        aup = ALProxy("ALAudioPlayer", self.IP, self.PORT)
 
         globalSentence = """"""
         count = 0
         globalFace = 9999
         
-        #convert(self.bookTitle,self.pages,False)
-        #fileName = 'C:\Users\Christian Lan\OneDrive\NAO CODE\output.txt'
-        #fileName = 'c:/Users/Zoe Chai/Desktop/output.txt'
-        #dictTxt = layout(True, self.bookTitle,self.pages)
-        #dictImg = layout(False, self.bookTitle,self.pages)
-
         with open(self.contentFileName) as f:
             lines = f.readlines()
             for line in lines:
-                #re.sub("^ [0-9]\/[0-9][0-9]"," ",line)
-                #sentence = re.split("\.",line)
+                # For each line, trim both head&tail space
+                # Left align the line and append to the string 'globalSentence'
+                # Split globalsentence by period to get each sentence of the book.
                 line = line.strip()
                 line = line.ljust(len(line)+1)
-                #line = line.join("\\pau=100\\")
-                #print "line", line
                 globalSentence = globalSentence+line
-            #print "global sentence", globalSentence
             sentence = re.split("\.",globalSentence)
-            #print "sentence", sentence
+
             gaze.subscribe("ALGazeAnalysis")
             memoryProxy.subscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",self.IP)
             for sytax in sentence:
-                
                 toleranceRange = gaze.getTolerance()
-                print"range",toleranceRange
-                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",self.self.IP)
-                #print"look back"
-                
-            
-                time.sleep(2)
-                
+                time.sleep(2)               
                 PeopleId = memoryProxy.getData("PeoplePerception/VisiblePeopleList")
-                print"FaceGlobalId", globalFace
-                print"FaceId", PeopleId
-                #faceData = faceProxy.getLearnedFacesList()
-                
                 targetPosition = self.tracker.getTargetPosition(0)
-                print targetPosition
+                #Checking if the current people from memorylist is same as the last time reading
+                #If same, do the gaze analysis
+                #If not, skip because it will cause an error that there is no data in memory
                 if globalFace != PeopleId:
                     globalFace = PeopleId
                     
                     jump = True
                 else:
                     jump = False
-                #if self.tracker.isNewTargetDetected():
-
-                #print( "visualData: %s" % visualData )
-                #time.sleep(2)
-                #memoryProxy.unsubscribeToEvent("PeoplePerception/PeopleList","ALGazeAnalysis")
-                #memoryProxy.subscribeToEvent("GazeAnalysis/PersonStopsLookingAtRobot","ALGazeAnalysis",self.IP)
                 time.sleep(2)
-                #print faceData
+                
                 if len(PeopleId) != 0 and not jump:
                     try:
                         visualData = memoryProxy.getData("PeoplePerception/Person/"+str(PeopleId[0])+"/IsLookingAtRobot")
-                        print( "visualData: %s" % visualData )
-                        LedProxy = ALProxy("ALLeds", self.IP, 9559)
+
+                        LedProxy = ALProxy("ALLeds", self.IP, self.PORT)
                         LedProxy.randomEyes(2)
                         if visualData != 1:
-                            #add dialog here
+                            #If the visualData is not equal 1, then the child is not looking at the book
                             dialog.subscribe('myModule')
                             dialog.activateTopic(topic)
-                            #dialog.forceOutput()
                             dialog.gotoTopic("ExampleDialog")
-                            #aup.playFile("/home/nao/home/nao/random.wav")
-                            """memoryProxy.removeData("Dialog/Answered")
-                            memoryProxy.subscribeToEvent("Dialog/Answered","Dialog",IP)
-
-                            dialogOutput = memoryProxy.getData("Dialog/Answered")
-                            while(dialogOutput == None):
-                                time.sleep(1)
-                                dialogOutput = memoryProxy.getData("Dialog/Answered")"""
                             dialog.deactivateTopic(topic)
-                            # Unload topic
-                            #dialog.unloadTopic(topic)
-                            # Stop dialog
                             dialog.unsubscribe('myModule')
                             self.tts.say("Let's continue")
-                            #memoryProxy.unsubscribeToEvent("Dialog/Answered","Dialog")
-                            """self.tts.say("Hey my little friend!")
-                            self.tts.say("Can you tell me what just happened in the story?")
-                            listen = SoundFeedback(asr,memoryProxy)
-                            sound = listen.getVoiceRec()
-                            if sound == "No":
-                                self.tts.say("Aw")
-                                self.tts.say("I would feel sad if you are not reading it with me")
-                                self.tts.say("Please come back")
-                            else:
-                                self.tts.say("That's right!")
-                                self.tts.say("Let's continue!")"""
-
                     except RuntimeError:
                         print"skip the error"
                         pass
+                #Get page number from current sentence
                 page = re.search("([0-9]+)\/[0-9]+",sytax)
                 
                 #count the pagenum and call the def locationToPoint to return a location
-                
+
+                #set pointing for first page, or it won't point because no page number reached. 
                 if self.countPage == 0 and self.turnPage == 0:
                     pagenum = self.pages[0]
                     if self.dictTxt[pagenum] == "rightbottom":
@@ -160,13 +133,9 @@ class Reader:
                     else:
                         location = self.dictTxt[pagenum]
                     self.turnPage = 1
-                    #self.tracker.setTimeOut(2000)
                     self.tts.say("Let's look at this picture")
                     armMotion.point(location)
                     time.sleep(1)
-                    
-                    #self.tracker.lookAt(targetPosition,0,0.5,False)
-                    
                     
                 
                 if page:    
@@ -180,10 +149,9 @@ class Reader:
                         location = self.dictImg[pagenum]
                     else:
                         location = self.dictTxt[pagenum]
-                    #location = self.locationToPoint(pagenum)
-                    #self.tracker.setTimeOut(2000)
-                
-                    
+                                  
+                    #Various way to say trun page by using % operation to decide which 
+                    #predefined sentence to say.
                     self.tts.say(self.trunPageSpeak[count%len(self.trunPageSpeak)])
                     armMotion.point(location)
                     time.sleep(2)
@@ -195,14 +163,10 @@ class Reader:
             
                 output = re.sub("[!@#$-]","",output)
                 count += 1
-                #if count 
-                print "sytax", output
-                #tts.setParameter("speed", 50)
                 atts.say(output.lower(),{"bodyLanguageMode":"random"})
         atts.say("Yeah!",{"bodyLanguageMode":"contextual"})
         self.tts.say("We finished a book!")
         atts.say("Hope to see you next time! Bye!",{"bodyLanguageMode":"contextual"})
         gaze.unsubscribe("ALGazeAnalysis")
-        #memoryProxy.unsubscribeToEvent("PeoplePerception/VisiblePeopleList","ALGazeAnalysis",self.IP)
-    
+        
     

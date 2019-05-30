@@ -2,51 +2,50 @@ import time
 import almath
 import argparse
 from naoqi import ALProxy
-
+"""
+    Liuyi wrote this ArmMotion part
+"""
 class ArmMotion:
+    """
+        This class has three functions:
+            1 setup calibration
+            2 hold pen
+            3 point
+    """
     def __init__(self,motionProxy,memoryProxy,postureProxy,tts):
         self.motionProxy = motionProxy
         self.memory = memoryProxy
         self.postureProxy = postureProxy
         self.tts = tts
 
-    
-        
-
-
-        #hold pen
+        #Parameters for hold pen
         self.names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
         self.angleLists = [-60.0*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 5.0*almath.TO_RAD,100.0*almath.TO_RAD,
                     30.0*almath.TO_RAD, -10.0*almath.TO_RAD]
         self.times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
         self.isAbsolute = True
-    def setupCalibration(self):
-        #initializePosture
-        self.motionProxy.rest()
-        #self.postureProxy.goToPosture("Crouch",0.5)
 
-        #InitializeMotion
-        #self.motion.wakeUp()
-        #time.sleep(10)
+    def setupCalibration(self):
+        """
+            This method set up the calibration process
+            It first calls holdPen() to hold a pen
+            Then calls point() with parameter calibration to point to center
+        """
+        self.motionProxy.rest()
         self.motionProxy.stiffnessInterpolation("Head", 1.0, 1.0)
-        #Initialize armMotion instance
-        #armMotion = arm.ArmMotion(self.motion,memoryProxy,self.postureProxy)
         self.tts.say("please put a pen for me")
-        
         self.holdPen()
-        
-        
-        
-        #Calibrate the hand
         self.tts.say("Calibration")
         self.tts.say("Please place the center of the tablet to where I'm pointing at")
         self.tts.say("Please touch my head when calibration finished")
         self.point("calibration")
-        
         self.tts.say("Calibration finished.")
         
         
     def holdPen(self):
+        """
+            This method lets the robot open the hand and close when people touch its head
+        """
         #Set the LHand 
         self.motionProxy.setStiffnesses("LWristYaw", 1.0)
         self.motionProxy.setStiffnesses("LShoulderRoll", 1.0)
@@ -54,15 +53,10 @@ class ArmMotion:
         self.motionProxy.setStiffnesses("LElbowRoll", 1.0)
         self.motionProxy.angleInterpolation(self.names, self.angleLists, self.times, self.isAbsolute)
         self.motionProxy.openHand('LHand')
-        #say "put a pen in my hand"
         self.memory.subscribeToEvent("MiddleTactilTouched", "ReactToTouch", "172.20.10.14")
-        while(True):
-                
+        while(True): 
                 time.sleep(3)
                 touchOrNot = self.memory.getData("MiddleTactilTouched")
-            
-                print(touchOrNot)
-                #if (['Head/Touch/Middle', False] or ['Head/Touch/Middle', True]) in touchOrNot:
                 if touchOrNot == 1.0:
                     #hold pen completed
                     self.memory.unsubscribeToEvent("MiddleTactilTouched","ReactToTouch")
@@ -70,36 +64,29 @@ class ArmMotion:
                     break
                 else:
                     time.sleep(1)
-        #time.sleep(1.0)
         self.motionProxy.closeHand('LHand')
         time.sleep(1.0)
-
         self.postureProxy.goToPosture("Crouch",0.5)
 
 
     def point(self,location):
+        """
+            This method defines where to point for the robot.
+            The parameter location is used to check where to point. 
+            For each different location, the parameters of names, angleLists, times, and isAbsolute
+            are different.
+        """
         if location == "calibration":
-            #Need to extrat a single ifelse for calibration
-            #self.postureProxy.goToPosture("Crouch",1.0)
-            #Middle-calibration
             names      = ["LElbowRoll","LElbowYaw","LWristYaw", "LShoulderRoll","LShoulderPitch","HeadYaw","HeadPitch"]
             angleLists = [-10.5*almath.TO_RAD,-109.5*almath.TO_RAD, -104.5*almath.TO_RAD, 5.0*almath.TO_RAD,80.0*almath.TO_RAD,
                         60*almath.TO_RAD, 20*almath.TO_RAD]
             times      = [1.0, 1.0,1.0,1.0,1.0,1.0,1.0]
             isAbsolute = True
             self.motionProxy.post.angleInterpolation(names, angleLists, times, isAbsolute)
-
-            #tell the teacher to keep adjusting the tablet until the pen points to the middle of the screen, then press the head buttom
-            #self.memory.unsubscribeToEvent("TouchChanged","ReactToTouch")
-            
-            #print touchOrNot
             while(True):
                 self.memory.subscribeToEvent("MiddleTactilTouched", "ReactToTouch", "172.20.10.14")
                 time.sleep(3)
                 touchOrNot = self.memory.getData("MiddleTactilTouched")
-            
-                print(touchOrNot)
-                #if (['Head/Touch/Middle', False] or ['Head/Touch/Middle', True]) in touchOrNot:
                 if touchOrNot == 1.0:
                     #colibration completed
                     self.memory.unsubscribeToEvent("MiddleTactilTouched","ReactToTouch")
