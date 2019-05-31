@@ -1,91 +1,53 @@
 /**
- * Author:LIUYI CHAI
-
- * Purpose:This class is a UI for users to choose book pages
+ * File Name    :ChoosePageUI.java
+ * Project      :TeacherUI
+ * Time         :16:30 31/05/19
+ * Author       :LIUYI CHAI
+ * Purpose      :This class creates the window for teachers to choose book pages
  */
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.Image;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.JList;
 import javax.swing.JButton;
-import javax.swing.SwingConstants;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.SystemColor;
 import java.awt.Color;
 
-import javax.swing.JEditorPane;
 
 import java.awt.Font;
 
-import javax.swing.UIManager;
-
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
 public class ChoosePageUI<ClientUI> extends JFrame {
 	private JPanel uploadPanel;
-	private List<JLabel> playerIconList = new ArrayList<JLabel>();
-	private int optionInt = 0;
 	private JTextField beginNum;
 	private JTextField endNum;
 	private MainUI mainframe;
 	private String path = "C:\\Users\\Zoe Chai\\Desktop\\nao\\nao_story_read\\NAO CODE\\books";//Chai
 //    private String path = "C:\\Users\\Christian Lan\\OneDrive\\NAO CODE\\books";//Lan
 	
-	/**
-	 * Launch the application.
-	 */
 	
-
-	/**
-	 * Create the frame.
-	 */
-	
-	
+	//This constructor is for initializing the contents on the window
 	public ChoosePageUI() {
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				ChoosePageUI choosepageframe = new ChoosePageUI();
-				choosepageframe.dispose();
-			    
-			}
-		});
 		
+		//initializaton of the panel
 		setSize(513, 658);
 		setLocationRelativeTo(null);
 		uploadPanel = new JPanel();
@@ -94,13 +56,14 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 		setContentPane(uploadPanel);
 		uploadPanel.setLayout(null);
 		
-		
+		//This label shows the title of the chosen book
 		JLabel lblBookTitle = new JLabel("");
 		lblBookTitle.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblBookTitle.setBackground(Color.WHITE);
 		lblBookTitle.setBounds(16, 18, 460, 38);
 		uploadPanel.add(lblBookTitle);
 		lblBookTitle.setText(mainframe.list.getSelectedValue());
+		
 		
 		JTextPane txtpnChoosePages = new JTextPane();
 		txtpnChoosePages.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -150,6 +113,7 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 		Tips.setBounds(16, 444, 441, 88);
 		uploadPanel.add(Tips);
 		
+		//Parse the page numbers typed in the text field when clicking the "Confirm" button
 		JButton btnConfirm = new JButton("Confirm");
 		btnConfirm.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		btnConfirm.addActionListener(new ActionListener() {
@@ -159,14 +123,16 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 				int beginInt = Integer.parseInt(begin);
 				int endInt = Integer.parseInt(end);
 				
+				//check the validity of the page numbers
 				if(beginInt>=0 && endInt>=0 && endInt >= beginInt){
 					JOptionPane.showConfirmDialog(null, "You have successfully set the pages!");
 					List<Integer> pageList = new ArrayList<>();
-					System.out.println(Integer.parseInt(begin));
+					//generate a list to store the page numbers from the beginning to the end
 					for(int i=beginInt;i<=endInt;i++){
 						pageList.add(i);
 					}
 					
+					//write the page number list and the chosen book into the book_pages.txt file
 					PrintWriter writer;
 					try {
 						File pageText = new File(path +"\\book_pages.txt");
@@ -175,7 +141,6 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 						}
 						writer = new PrintWriter(pageText, "UTF-8");
 					    writer.println(mainframe.list.getSelectedValue()+".pdf");
-					    System.out.println(mainframe.list.getSelectedValue());//test
 					    writer.println(pageList);
 				    	writer.close();
 					} catch (FileNotFoundException
@@ -196,12 +161,8 @@ public class ChoosePageUI<ClientUI> extends JFrame {
 		uploadPanel.add(btnConfirm);
 		
 		
-		
 		}
-
-
 
 
 }
 
-//:~

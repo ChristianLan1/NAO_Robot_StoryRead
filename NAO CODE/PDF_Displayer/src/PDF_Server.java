@@ -1,74 +1,33 @@
 /**
- * Author:LIUYI CHAI
-
- * Purpose:This class is a UI for users to choose books
+ * File Name    :PDF_Server.java
+ * Project      :PDF_Displayer
+ * Time         :16:30 31/05/19
+ * Author       :LIUYI CHAI for the UI part
+ *               XINJIE LAN implemented auto-starting(Threads & startNao()) and Connection(start()) 
+ * Purpose      :This class creates a socket to receive the messages sent from the client, builds
+ *               multiple threads to auto-launch the python file on the client's end, and creates 
+ *               the main window of the pdf displayer
  */
-
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
-
-import java.awt.GridLayout;
-
-import javax.swing.JPanel;
-
-import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
-
-import javax.swing.JTextField;
-
-import java.awt.GridBagConstraints;
-
-import javax.swing.JButton;
-
-import java.awt.Insets;
-
-import javax.swing.JTextArea;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
-import java.nio.Buffer;
 import java.util.*;
-
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.JLabel;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
-
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.Color;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.SystemColor;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JList;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.util.ImageIOUtil;
@@ -107,11 +66,8 @@ public class PDF_Server {
 
     }
 		
-		
-		
-
 	
-
+    
 	public PDF_Server() throws IOException {
 		    System.out.println("initializing the server...");
 		    listeningSocket = new ServerSocket(8088);
@@ -150,8 +106,6 @@ public class PDF_Server {
 			try {
 	
 				
-				System.out.println("1");//test 1
-				
 				BufferedReader reader;
 				String line;
 				String clientMsg = null;
@@ -172,7 +126,6 @@ public class PDF_Server {
 				
 				convert(bookTitle);//parse the pdf file
 				
-				System.out.println("2");//test 2
 				
 				
 				//set the book cover as the first page
@@ -229,10 +182,9 @@ public class PDF_Server {
 			while (true) {
 				System.out.println("port: "+ PORT);
 				System.out.println("Server listening on port "+PORT+" for a connection"+"\n");
-				//System.out.println("Server listening on port "+port+" for a connection");
 				//Accept an incoming client connection request 
-				clientSocket = listeningSocket.accept(); //This method will block until a connection request is received
-				
+				//This method will block until a connection request is received
+				clientSocket = listeningSocket.accept(); 
 				System.out.println("Connection Established");
 				
 				numOfClients++;
@@ -240,10 +192,6 @@ public class PDF_Server {
 				requests(clientSocket);
 				
 				
-				
-				
-				
-				//clientSocket.close();
 			}
 		} catch (SocketException ex) {
 			ex.printStackTrace();
@@ -260,6 +208,8 @@ public class PDF_Server {
 			}
 		}
 	}
+	
+//auto-start the python file
 private void startNao() {
 	String pathNao="\"C:\\Users\\Zoe Chai\\Desktop\\nao\\nao_story_read\\NAO CODE\\";
 	String py="naoMain";
